@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waltersumbon.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言之前参加ICS课程就一直想在硬件上实现LC-3，正巧模拟与数字电路的实验课大作业要求使用FPGA开发板完成一个较为复杂的项目，便借此机会实现了LC-3一个较为简单的子集。 代码已经上传到我的GitHub上，项目地址。求star 另外LC-3汇编代码可以使用我写的一个简陋的的汇编器转化为二进制码，项目地址。 今年《计算机系统概论》的英文原版出了新版本，可能是因为Yale Patt和安虹老师的关系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用FPGA开发板实现LC-3子集">
+<meta property="og:url" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/index.html">
+<meta property="og:site_name" content="Sumbon&#39;s Blog">
+<meta property="og:description" content="前言之前参加ICS课程就一直想在硬件上实现LC-3，正巧模拟与数字电路的实验课大作业要求使用FPGA开发板完成一个较为复杂的项目，便借此机会实现了LC-3一个较为简单的子集。 代码已经上传到我的GitHub上，项目地址。求star 另外LC-3汇编代码可以使用我写的一个简陋的的汇编器转化为二进制码，项目地址。 今年《计算机系统概论》的英文原版出了新版本，可能是因为Yale Patt和安虹老师的关系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/%E6%8C%87%E4%BB%A4%E9%9B%86.jpg">
+<meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/mod%E5%88%87%E6%8D%A2.jpg">
+<meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0300.jpg">
+<meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0301.jpg">
+<meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0302(before).jpg">
+<meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0302(after).jpg">
+<meta property="article:published_time" content="2021-01-22T08:58:31.000Z">
+<meta property="article:modified_time" content="2021-01-22T11:50:21.019Z">
+<meta property="article:author" content="Sumbon">
+<meta property="article:tag" content="FPGA">
+<meta property="article:tag" content="LC-3">
+<meta property="article:tag" content="CPU">
+<meta property="article:tag" content="Verilog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/%E6%8C%87%E4%BB%A4%E9%9B%86.jpg">
+
+<link rel="canonical" href="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用FPGA开发板实现LC-3子集 | Sumbon's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sumbon's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Sumbon">
+      <meta itemprop="description" content="Sumbon的博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sumbon's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用FPGA开发板实现LC-3子集
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-22 16:58:31 / 修改时间：19:50:21" itemprop="dateCreated datePublished" datetime="2021-01-22T16:58:31+08:00">2021-01-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A1%AC%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">硬件</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前参加ICS课程就一直想在硬件上实现LC-3，正巧模拟与数字电路的实验课大作业要求使用FPGA开发板完成一个较为复杂的项目，便借此机会实现了LC-3一个较为简单的子集。</p>
+<p>代码已经上传到我的GitHub上，<a target="_blank" rel="noopener" href="https://github.com/WalterSumbon/LC-3-simulator">项目地址</a>。<del>求star</del></p>
+<p>另外LC-3汇编代码可以使用我写的一个简陋的的汇编器转化为二进制码，<a target="_blank" rel="noopener" href="https://github.com/WalterSumbon/LC-3-Assembler">项目地址</a>。</p>
+<p>今年《计算机系统概论》的英文原版出了新版本，<del>可能是因为Yale Patt和安虹老师的关系比较好</del>，中文版的翻译工作被委托给了安虹老师，我也<del>不幸</del>被抓去参与部分翻译和校对。估计不久之后中文新版就能问世了。</p>
+<a id="more"></a>
+
+<h3 id="LC-3介绍"><a href="#LC-3介绍" class="headerlink" title="LC-3介绍"></a>LC-3介绍</h3><p>LC-3出自《计算机系统概论(第二版)》一书，是一个图灵完备的16位计算机，内置了2<sup>10</sup>*16 bit的内存和8个16位的寄存器。<br>指令集及每条指令的具体解释如下：  </p>
+<p><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/%E6%8C%87%E4%BB%A4%E9%9B%86.jpg" alt="指令集"></p>
+<table>
+<thead>
+<tr>
+<th align="left">指令</th>
+<th align="left">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">ADD</td>
+<td align="left">相加</td>
+</tr>
+<tr>
+<td align="left">AND</td>
+<td align="left">按位与</td>
+</tr>
+<tr>
+<td align="left">BR</td>
+<td align="left">根据条件码跳转</td>
+</tr>
+<tr>
+<td align="left">JMP</td>
+<td align="left">无条件跳转</td>
+</tr>
+<tr>
+<td align="left">JSR/JSRR</td>
+<td align="left">将当前的PC存入R7，然后跳转</td>
+</tr>
+<tr>
+<td align="left">LD</td>
+<td align="left">加载内存数据，采用PC相对寻址</td>
+</tr>
+<tr>
+<td align="left">LDI</td>
+<td align="left">加载内存数据，采用间接寻址</td>
+</tr>
+<tr>
+<td align="left">LDR</td>
+<td align="left">加载内存数据，采用寄存器寻址</td>
+</tr>
+<tr>
+<td align="left">LEA</td>
+<td align="left">将PC+PCoffset存入寄存器</td>
+</tr>
+<tr>
+<td align="left">NOT</td>
+<td align="left">按位取非</td>
+</tr>
+<tr>
+<td align="left">RET</td>
+<td align="left">将R7的值赋给PC</td>
+</tr>
+<tr>
+<td align="left">RTI</td>
+<td align="left">中断返回</td>
+</tr>
+<tr>
+<td align="left">ST</td>
+<td align="left">将指定寄存器的内容存入内存，采用PC相对寻址</td>
+</tr>
+<tr>
+<td align="left">STI</td>
+<td align="left">将指定寄存器的内容存入内存，采用间接寻址</td>
+</tr>
+<tr>
+<td align="left">STR</td>
+<td align="left">将指定寄存器的内容存入内存，采用寄存器寻址</td>
+</tr>
+<tr>
+<td align="left">TRAP</td>
+<td align="left">将内存中地址为trapvect的数据加载到PC中</td>
+</tr>
+<tr>
+<td align="left">HALT</td>
+<td align="left">相当于<code>TRAP x25</code></td>
+</tr>
+</tbody></table>
+<p>这里实现的LC-3子集相对于《计算机系统概论》中描述的还是有一定的区别：  </p>
+<ul>
+<li>内存空间设置成了2<sup>10</sup>个地址，而不是书中的2<sup>16</sup>，主要的考虑是如果内存过大，在VIVADO生成的时候会耗费大量的时间，而内存中的很多空间是根本不会用到的，此外缩小内存空间不会产生本质上的区别。</li>
+<li>删去了有关中断处理的部分，因为没有连接外设，所以不会用到中断机制，留着实属鸡肋。  </li>
+<li>停机操作的触发条件是PC为非法值，而不是修改控制寄存器内容使时钟停止。</li>
+<li>内存中TRAP矢量表x0025处的内容改为了xFFFF，这样在执行HALT指令时可以直接将PC设为非法值从而触发停机。</li>
+<li>TRAP矢量表中其他地址的内容都指向了非法值。</li>
+</ul>
+<h3 id="操作说明："><a href="#操作说明：" class="headerlink" title="操作说明："></a>操作说明：</h3><p>为了为下文的介绍做铺垫，先介绍一些理解交互操作所需的程序变量：</p>
+<table>
+<thead>
+<tr>
+<th align="center">变量名</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">内存地址</td>
+<td align="left">数据在内存中的地址，范围 0~2<sup>10</sup>-1</td>
+</tr>
+<tr>
+<td align="center">内存内容</td>
+<td align="left">内存中存储的内容，在LC-3的实现中不严格区分指令和数据</td>
+</tr>
+<tr>
+<td align="center">PC</td>
+<td align="left">program counter，指向当前执行的指令在内存中的地址</td>
+</tr>
+<tr>
+<td align="center">cur</td>
+<td align="left">光标(cursor)，表示当前被数码管显示的内存地址</td>
+</tr>
+<tr>
+<td align="center">cnt</td>
+<td align="left">count，用来计数执行的指令条数</td>
+</tr>
+<tr>
+<td align="center">mod</td>
+<td align="left">交互模式状态代码</td>
+</tr>
+<tr>
+<td align="center">state</td>
+<td align="left">内核状态机状态代码</td>
+</tr>
+</tbody></table>
+<p>注：其实整个LC-3中只有一个有限状态机，但为了方便理解和编写代码，将状态机的状态代码分为了<code>mod</code>和<code>state</code>两部分，这种表述与只用一个状态变量是等价的。</p>
+<p>下面进行详细介绍。</p>
+<p>为了方便与用户的交互，LC-3 Simulator总共设计了3种模式: </p>
+<table>
+<thead>
+<tr>
+<th align="center">模式</th>
+<th align="center">功能</th>
+<th align="center">状态代码(mod)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Write</td>
+<td align="center">写入</td>
+<td align="center">00</td>
+</tr>
+<tr>
+<td align="center">Jump</td>
+<td align="center">跳转</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="center">Run</td>
+<td align="center">运行</td>
+<td align="center">01</td>
+</tr>
+<tr>
+<td align="center">(Undefined)</td>
+<td align="center">(未定义)</td>
+<td align="center">11</td>
+</tr>
+</tbody></table>
+<p>（最后一种不会用到，但是要注意自启动问题）</p>
+<p>LC-3 的内核，也就是执行程序的核心部分，使用有限状态自动机进行描述。共有32种状态，大部分状态与具体的指令逻辑有关，不做特别介绍，可以参见代码。下面说明一些关键的状态：</p>
+<table>
+<thead>
+<tr>
+<th align="center">state</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="left">停机状态</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="left">将内存的写使能(write enable)信号置为0，同时cnt加一</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="left">取指令，PC加一，同时检查PC是否为非法值，如果是，跳转到状态0(停机)</td>
+</tr>
+</tbody></table>
+<p>显示部分使用的是板载的数码管和LED灯：</p>
+<ul>
+<li><p>数码管</p>
+<ul>
+<li>始终显示的是当前光标所在行的地址和内容，二者均使用16进制表示。</li>
+</ul>
+</li>
+<li><p>LED灯</p>
+<ul>
+<li><p>在Write状态下</p>
+<ul>
+<li>显示的是PC值(这样设置主要是为了方便调试)；</li>
+</ul>
+</li>
+<li><p>在其他状态下</p>
+<ul>
+<li>左侧9位显示的是指令执行总条数的数值(cur)</li>
+<li>中间5位显示的是当前的LC-3内核自动机的状态代码(state)</li>
+<li>右边两位显示的是当前的交互模式代码(mod)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>可供操作的有五个按钮和16个开关。<br>可以使用上下左右中5个按钮进行操控:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">按钮</th>
+<th align="left">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">上(BTN_U)</td>
+<td align="left">在<code>Write</code>和<code>Jump</code>模式下用来使<code>cur</code>减一</td>
+</tr>
+<tr>
+<td align="center">下(BTN_D)</td>
+<td align="left">在<code>Write</code>和<code>Jump</code>模式下用来使<code>cur</code>加一</td>
+</tr>
+<tr>
+<td align="center">左(BTN_L)</td>
+<td align="left">用来在<code>Write</code>和<code>Jump</code>模式间相互切换，或强制终止运行(<code>Run--&gt;Write</code>)</td>
+</tr>
+<tr>
+<td align="center">右(BTN_R)</td>
+<td align="left">将<code>SW</code>赋值给<code>PC</code>，并开始执行，切换到<code>Run</code>模式</td>
+</tr>
+<tr>
+<td align="center">中(BTN_C)</td>
+<td align="left">确定键，<code>Write</code>模式下将<code>SW</code>赋值给<code>cur</code>指向的内存空间，<code>Jump</code>模式下将<code>SW</code>赋值给<code>cur</code></td>
+</tr>
+</tbody></table>
+<p>其状态转移图如下：<br><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/mod%E5%88%87%E6%8D%A2.jpg" alt="mod切换"></p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>为了方便测试，在FPGA中内置了求解最大公因数的程序。<br>以下是其对应的LC-3汇编程序描述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">        .ORIG	x0200</span><br><span class="line">        LDI		R0,A</span><br><span class="line">        LDI		R1,B</span><br><span class="line">        AND		R0,R0,R0</span><br><span class="line">        BRp		#2</span><br><span class="line">        NOT		R0,R0</span><br><span class="line">        ADD		R0,R0,#1</span><br><span class="line">        AND		R1,R1,R1</span><br><span class="line">        BRn		#2</span><br><span class="line">        NOT		R1,R1</span><br><span class="line">        ADD		R1,R1,#1</span><br><span class="line">TEST	ADD		R2,R1,R0</span><br><span class="line">        BRz		ANS</span><br><span class="line">        BRn		ELSE</span><br><span class="line">        AND		R2,R1,R1</span><br><span class="line">TEST1	ADD		R3,R2,R0</span><br><span class="line">        ADD		R3,R3,R2</span><br><span class="line">        BRp		CASE1</span><br><span class="line">        ADD		R0,R0,R2</span><br><span class="line">        BRnzp	TEST</span><br><span class="line">CASE1	ADD 	R2,R2,R2</span><br><span class="line">        BRnzp	TEST1</span><br><span class="line">ELSE	AND		R2,R0,R0</span><br><span class="line">TEST2	ADD		R3,R2,R1</span><br><span class="line">        ADD		R3,R2,R3</span><br><span class="line">        BRn		CASE2</span><br><span class="line">        ADD		R1,R1,R2</span><br><span class="line">        BRnzp	TEST</span><br><span class="line">CASE2	ADD		R2,R2,R2</span><br><span class="line">        BRnzp	TEST2</span><br><span class="line">ANS		STI		R0,C</span><br><span class="line">        HALT</span><br><span class="line"></span><br><span class="line">A		.FILL	x0300</span><br><span class="line">B		.FILL	x0301</span><br><span class="line">C		.FILL	x0302</span><br><span class="line">        .END</span><br></pre></td></tr></table></figure>
+<p>对其中出现的伪指令的解释：  </p>
+<table>
+<thead>
+<tr>
+<th align="left">伪指令</th>
+<th align="left">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">.ORIG</td>
+<td align="left">声明程序起始地址</td>
+</tr>
+<tr>
+<td align="left">.FILL</td>
+<td align="left">直接填充数据。例如<code>.FILL x0300</code>表示该行的内容为<code>x0300</code></td>
+</tr>
+<tr>
+<td align="left">.END</td>
+<td align="left">表示程序到此为止</td>
+</tr>
+</tbody></table>
+<p>对应的二进制码为(<del>随便看看就行，谁会去仔细看这一大堆的01啊</del>)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">0000001000000000</span><br><span class="line">1010000000011110</span><br><span class="line">1010001000011110</span><br><span class="line">0101000000000000</span><br><span class="line">0000001000000010</span><br><span class="line">1001000000111111</span><br><span class="line">0001000000100001</span><br><span class="line">0101001001000001</span><br><span class="line">0000100000000010</span><br><span class="line">1001001001111111</span><br><span class="line">0001001001100001</span><br><span class="line">0001010001000000</span><br><span class="line">0000010000010001</span><br><span class="line">0000100000001000</span><br><span class="line">0101010001000001</span><br><span class="line">0001011010000000</span><br><span class="line">0001011011000010</span><br><span class="line">0000001000000010</span><br><span class="line">0001000000000010</span><br><span class="line">0000111111110111</span><br><span class="line">0001010010000010</span><br><span class="line">0000111111111001</span><br><span class="line">0101010000000000</span><br><span class="line">0001011010000001</span><br><span class="line">0001011010000011</span><br><span class="line">0000100000000010</span><br><span class="line">0001001001000010</span><br><span class="line">0000111111101111</span><br><span class="line">0001010010000010</span><br><span class="line">0000111111111001</span><br><span class="line">1011000000000011</span><br><span class="line">1111000000100101</span><br><span class="line">0000001100000000</span><br><span class="line">0000001100000001</span><br><span class="line">0000001100000010</span><br></pre></td></tr></table></figure>
+<p>测试数据：<br>0000000011110111 (x00F7 = 13 * 19)<br>0000000010011100 (x009C = 13 * 12)<br>预期结果：<br>0000000000001101 (x000d = 13)<br>测试照片：<br><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0300.jpg" alt="x0300.jpg"></p>
+<p><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0301.jpg" alt="x0301.jpg"></p>
+<p><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0302(before).jpg" alt="x0302(before).jpg"></p>
+<p>运行后：<br><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0302(after).jpg" alt="x0302(after).jpg"></p>
+<p>同时可以看到总共执行了63条指令。</p>
+<h3 id="代码解释"><a href="#代码解释" class="headerlink" title="代码解释"></a>代码解释</h3><h6 id="按键去抖动并取上升沿的模块"><a href="#按键去抖动并取上升沿的模块" class="headerlink" title="按键去抖动并取上升沿的模块"></a>按键去抖动并取上升沿的模块</h6><p><del>现在再回头看感觉这些代码都是黑历史</del><br>为了使得能在时钟上升沿时btn_clean能被采样到有且只有一次，在该模块中输出的btn_clean的信号起始和终止都在时钟的下降沿，且时长为一个时钟周期。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span>	clean_posedge(</span><br><span class="line"><span class="keyword">input</span>	clk,</span><br><span class="line"><span class="keyword">input</span>	btn,</span><br><span class="line"><span class="keyword">output</span>	btn_clean);</span><br><span class="line"><span class="keyword">reg</span>	[<span class="number">15</span>:<span class="number">0</span>]	cnt;</span><br><span class="line"><span class="keyword">reg</span>	[<span class="number">1</span>:<span class="number">0</span>]	delay_sig;</span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">negedge</span> clk)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(btn == <span class="number">1&#x27;b0</span>)</span><br><span class="line">        cnt &lt;= <span class="number">16&#x27;b0</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(cnt &lt; <span class="number">16&#x27;h8000</span>)</span><br><span class="line">        cnt &lt;= cnt +<span class="number">1&#x27;b1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">negedge</span> clk)</span><br><span class="line">    delay_sig &lt;= &#123;delay_sig[<span class="number">0</span>],cnt[<span class="number">15</span>]&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span>	btn_clean = delay_sig[<span class="number">0</span>] &amp; (~delay_sig[<span class="number">1</span>]);</span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+<h6 id="LC-3主模块"><a href="#LC-3主模块" class="headerlink" title="LC-3主模块"></a>LC-3主模块</h6><p>LC-3的主要逻辑。</p>
+<p>具体部分的代码解释见注释。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br><span class="line">507</span><br><span class="line">508</span><br><span class="line">509</span><br><span class="line">510</span><br><span class="line">511</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span>  lc3(</span><br><span class="line"><span class="keyword">input</span>                   CLK     ,</span><br><span class="line"><span class="keyword">input</span>           [<span class="number">15</span>:<span class="number">0</span>]  SW      ,</span><br><span class="line"><span class="keyword">input</span>           [<span class="number">4</span>:<span class="number">0</span>]   BTN     ,</span><br><span class="line"><span class="keyword">output</span>      <span class="keyword">reg</span> [<span class="number">7</span>:<span class="number">0</span>]   SSEG_CA ,</span><br><span class="line"><span class="keyword">output</span>      <span class="keyword">reg</span> [<span class="number">7</span>:<span class="number">0</span>]   SSEG_AN ,</span><br><span class="line"><span class="keyword">output</span>           [<span class="number">15</span>:<span class="number">0</span>]  LED</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// 产生25MHz的时钟供内核使用</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">reg</span>		[<span class="number">1</span>:<span class="number">0</span>]	clk_25m_cnt;</span><br><span class="line"><span class="keyword">wire</span>			clk_25m;</span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> CLK)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    clk_25m_cnt &lt;= clk_25m_cnt + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span> clk_25m = clk_25m_cnt[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// LC-3 控制</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">//内核</span></span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">15</span>:<span class="number">0</span>]  PC;</span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">15</span>:<span class="number">0</span>]  IR;</span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">2</span>:<span class="number">0</span>]   CC;     <span class="comment">//N Z P</span></span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">15</span>:<span class="number">0</span>]  CCR;    <span class="comment">//用于计算CC的中间寄存器</span></span><br><span class="line"><span class="keyword">wire</span>            BEN;</span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">4</span>:<span class="number">0</span>]   state;  <span class="comment">//LC-3内核自动机的状态，共有32个</span></span><br><span class="line"><span class="comment">//内存</span></span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">9</span>:<span class="number">0</span>]   MAR;</span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">15</span>:<span class="number">0</span>]  MDR_in;</span><br><span class="line"><span class="keyword">wire</span>    [<span class="number">15</span>:<span class="number">0</span>]  MDR_out;</span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">15</span>:<span class="number">0</span>]  MDR;    <span class="comment">//缓冲用，防止输入输出直接相接</span></span><br><span class="line"><span class="keyword">reg</span>             M_WE;</span><br><span class="line"><span class="comment">//OS</span></span><br><span class="line"><span class="keyword">reg</span>		[<span class="number">15</span>:<span class="number">0</span>]	cur;    <span class="comment">//光标</span></span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">1</span>:<span class="number">0</span>]	mod;    <span class="comment">//jump:2	run:1  halt/write:0</span></span><br><span class="line"><span class="keyword">wire</span>	[<span class="number">4</span>:<span class="number">0</span>]	BTN_clean;</span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">8</span>:<span class="number">0</span>]   ins_cnt;<span class="comment">//指令计数器</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// LC-3 寄存器</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">wire</span>    [<span class="number">2</span>:<span class="number">0</span>]   DR;    <span class="comment">//二进制表示</span></span><br><span class="line"><span class="keyword">wire</span>    [<span class="number">2</span>:<span class="number">0</span>]   SR1;</span><br><span class="line"><span class="keyword">wire</span>    [<span class="number">2</span>:<span class="number">0</span>]   SR2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span>    DR = IR[<span class="number">11</span>:<span class="number">9</span>];</span><br><span class="line"><span class="keyword">assign</span>    SR1 = IR[<span class="number">8</span>:<span class="number">6</span>];</span><br><span class="line"><span class="keyword">assign</span>    SR2 = IR[<span class="number">2</span>:<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">15</span>:<span class="number">0</span>]  R[<span class="number">7</span>:<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// LC-3 内存</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">parameter</span>   memory_range = <span class="number">1</span> &lt;&lt; <span class="number">10</span>;</span><br><span class="line">dist_mem_gen_0	M(</span><br><span class="line"><span class="variable">.a</span>      (MAR),</span><br><span class="line"><span class="variable">.d</span>      (MDR_in),</span><br><span class="line"><span class="variable">.spo</span>   (MDR_out),</span><br><span class="line"><span class="variable">.clk</span>    (CLK),</span><br><span class="line"><span class="variable">.we</span>     (M_WE));</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// LC-3 内核</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">assign</span>  BEN = (IR[<span class="number">11</span>] &amp; CC[<span class="number">2</span>]) |</span><br><span class="line">              (IR[<span class="number">10</span>] &amp; CC[<span class="number">1</span>]) |</span><br><span class="line">              (IR[<span class="number">9</span>] &amp; CC[<span class="number">0</span>]);</span><br><span class="line"><span class="keyword">always</span> @(*)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">if</span>(CCR == <span class="number">16&#x27;b0</span>)</span><br><span class="line">        CC &lt;= <span class="number">3&#x27;b010</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(CCR[<span class="number">15</span>] == <span class="number">1&#x27;b1</span>)</span><br><span class="line">        CC &lt;= <span class="number">3&#x27;b100</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        CC &lt;= <span class="number">3&#x27;b001</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> clk_25m)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">case</span>(state)</span><br><span class="line">        <span class="number">5&#x27;d1</span>   :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            M_WE &lt;= <span class="number">1&#x27;b0</span>;		<span class="comment">//暂时禁止写入，防止在state == 2时内存被修改</span></span><br><span class="line">            ins_cnt &lt;= ins_cnt + <span class="number">1</span>;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d2</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d2</span>   :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span>(PC &gt;= memory_range || mod == <span class="number">2&#x27;b0</span>)</span><br><span class="line">            <span class="keyword">begin</span>               <span class="comment">//PC越界或强制停机</span></span><br><span class="line">                mod &lt;= <span class="number">2&#x27;d0</span>;</span><br><span class="line">                state &lt;= <span class="number">5&#x27;d0</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                MAR &lt;= PC[<span class="number">9</span>:<span class="number">0</span>];</span><br><span class="line">                PC &lt;= PC + <span class="number">1</span>;</span><br><span class="line">                state &lt;= <span class="number">5&#x27;d3</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d3</span>   :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            IR &lt;= MDR_out;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d4</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d4</span>   :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">case</span>(IR[<span class="number">15</span>:<span class="number">12</span>])</span><br><span class="line">                <span class="number">4&#x27;b0001</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d5</span>;  <span class="comment">//ADD</span></span><br><span class="line">                <span class="number">4&#x27;b0101</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d6</span>;  <span class="comment">//AND</span></span><br><span class="line">                <span class="number">4&#x27;b1001</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d7</span>;  <span class="comment">//NOT</span></span><br><span class="line">                <span class="number">4&#x27;b1111</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d8</span>;  <span class="comment">//TRAP</span></span><br><span class="line">                <span class="number">4&#x27;b1110</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d11</span>; <span class="comment">//LEA</span></span><br><span class="line">                <span class="number">4&#x27;b0010</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d12</span>; <span class="comment">//LD</span></span><br><span class="line">                <span class="number">4&#x27;b0110</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d13</span>; <span class="comment">//LDR</span></span><br><span class="line">                <span class="number">4&#x27;b1010</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d18</span>; <span class="comment">//LDI</span></span><br><span class="line">                <span class="number">4&#x27;b1011</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d19</span>; <span class="comment">//STI</span></span><br><span class="line">                <span class="number">4&#x27;b0111</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d22</span>; <span class="comment">//STR</span></span><br><span class="line">                <span class="number">4&#x27;b0011</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d23</span>; <span class="comment">//ST</span></span><br><span class="line">                <span class="number">4&#x27;b0100</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d29</span>; <span class="comment">//JSR</span></span><br><span class="line">                <span class="number">4&#x27;b1100</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d28</span>; <span class="comment">//JMP</span></span><br><span class="line">                <span class="number">4&#x27;b0000</span>:</span><br><span class="line">                    state &lt;= <span class="number">5&#x27;d26</span>; <span class="comment">//BR</span></span><br><span class="line">            <span class="keyword">endcase</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d5</span>   :</span><br><span class="line">        <span class="comment">//ADD</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span>(IR[<span class="number">5</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                R[DR] &lt;= R[SR1] + &#123;IR[<span class="number">4</span>]?<span class="number">11&#x27;b111_1111_1111</span>:<span class="number">11&#x27;b0</span>,IR[<span class="number">4</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">                CCR   &lt;= R[SR1] + &#123;IR[<span class="number">4</span>]?<span class="number">11&#x27;b111_1111_1111</span>:<span class="number">11&#x27;b0</span>,IR[<span class="number">4</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                R[DR] &lt;= R[SR1] + R[SR2];</span><br><span class="line">                CCR   &lt;= R[SR1] + R[SR2];</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d6</span>   :</span><br><span class="line">        <span class="comment">//AND</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span>(IR[<span class="number">5</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                R[DR] &lt;= R[SR1] &amp; &#123;IR[<span class="number">4</span>]?<span class="number">11&#x27;b111_1111_1111</span>:<span class="number">11&#x27;b0</span>,IR[<span class="number">4</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">                CCR   &lt;= R[SR1] &amp; &#123;IR[<span class="number">4</span>]?<span class="number">11&#x27;b111_1111_1111</span>:<span class="number">11&#x27;b0</span>,IR[<span class="number">4</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                R[DR] &lt;= R[SR1] &amp; R[SR2];</span><br><span class="line">                CCR   &lt;= R[SR1] &amp; R[SR2];</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d7</span>   :</span><br><span class="line">        <span class="comment">//NOT</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            R[DR] &lt;= ~R[SR1];</span><br><span class="line">            CCR   &lt;= ~R[SR1];</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d8</span>   :</span><br><span class="line">        <span class="comment">//TRAP</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= &#123;IR[<span class="number">7</span>]?<span class="number">2&#x27;b11</span>:<span class="number">2&#x27;b0</span>,IR[<span class="number">7</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d9</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d9</span>   :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            R[<span class="number">7</span>] &lt;= PC;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d10</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d10</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            PC &lt;= MDR_out;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d11</span>  :</span><br><span class="line">        <span class="comment">//LEA</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            R[DR] &lt;= PC + &#123;IR[<span class="number">8</span>]?<span class="number">7&#x27;b111_1111</span>:<span class="number">7&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            CCR   &lt;= PC + &#123;IR[<span class="number">8</span>]?<span class="number">7&#x27;b111_1111</span>:<span class="number">7&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d12</span>  :</span><br><span class="line">        <span class="comment">//LD</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= PC + &#123;IR[<span class="number">8</span>]?<span class="number">7&#x27;b111_1111</span>:<span class="number">7&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d14</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d13</span>  :</span><br><span class="line">        <span class="comment">//LDR</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= R[SR1] + &#123;IR[<span class="number">5</span>]?<span class="number">10&#x27;b11_1111_1111</span>:<span class="number">10&#x27;b0</span>,IR[<span class="number">5</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d14</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d14</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            state &lt;= <span class="number">5&#x27;d15</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d15</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            R[DR] &lt;= MDR_out;</span><br><span class="line">            CCR &lt;= MDR_out;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d16</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= MDR[<span class="number">9</span>:<span class="number">0</span>];</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d14</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d17</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MDR &lt;= MDR_out;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d16</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d18</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= PC + &#123;IR[<span class="number">8</span>]?<span class="number">7&#x27;b111_1111</span>:<span class="number">7&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d17</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d19</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= PC + &#123;IR[<span class="number">8</span>]?<span class="number">7&#x27;b111_1111</span>:<span class="number">7&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d20</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d20</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MDR &lt;= MDR_out;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d21</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d21</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= MDR[<span class="number">9</span>:<span class="number">0</span>];</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d24</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d22</span>  :</span><br><span class="line">        <span class="comment">//STR</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= R[SR1] + &#123;IR[<span class="number">5</span>]?<span class="number">10&#x27;b11_1111_1111</span>:<span class="number">10&#x27;b0</span>,IR[<span class="number">5</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d24</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d23</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= PC + &#123;IR[<span class="number">5</span>]?<span class="number">10&#x27;b11_1111_1111</span>:<span class="number">10&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d24</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d24</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MDR_in &lt;= R[DR];</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d25</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d25</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            M_WE &lt;= <span class="number">1&#x27;b1</span>;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d26</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span>(BEN)</span><br><span class="line">                state &lt;= <span class="number">5&#x27;d27</span>; <span class="comment">//BR 1</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                state &lt;= <span class="number">5&#x27;d1</span>;  <span class="comment">//BR 0</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d27</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            PC &lt;= PC + &#123;IR[<span class="number">8</span>] ? <span class="number">7&#x27;b111_1111</span> : <span class="number">7&#x27;b0</span>,IR[<span class="number">8</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d28</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            PC &lt;= R[SR1];</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d29</span>  :</span><br><span class="line">        <span class="comment">//JSR/JSRR</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            R[<span class="number">7</span>] &lt;= PC;</span><br><span class="line">            <span class="keyword">if</span>(IR[<span class="number">11</span>])</span><br><span class="line">                state &lt;= <span class="number">5&#x27;d30</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                state &lt;= <span class="number">5&#x27;d31</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d30</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            PC &lt;= PC + &#123;IR[<span class="number">10</span>]?<span class="number">5&#x27;b11111</span>:<span class="number">5&#x27;b0</span>,IR[<span class="number">10</span>:<span class="number">0</span>]&#125;;</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">5&#x27;d31</span>  :</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            PC &lt;= R[SR1];</span><br><span class="line">            state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="comment">//state == 0 , 当执行HALT后跳转到该状态</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            MAR &lt;= cur[<span class="number">9</span>:<span class="number">0</span>];</span><br><span class="line">            <span class="keyword">if</span>(mod == <span class="number">2&#x27;b01</span>)</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                PC &lt;= SW;			<span class="comment">//启动，从SW开始执行</span></span><br><span class="line">                ins_cnt &lt;= <span class="number">0</span>;       <span class="comment">//指令计数器清空</span></span><br><span class="line">                state &lt;= <span class="number">5&#x27;d1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                state &lt;= <span class="number">5&#x27;d0</span>;		<span class="comment">//保持停机状态</span></span><br><span class="line">            <span class="keyword">if</span> (mod == <span class="number">2&#x27;b00</span> &amp;&amp; BTN_clean[<span class="number">4</span>])		<span class="comment">//Press Enter</span></span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                M_WE &lt;= <span class="number">1&#x27;b1</span>;	<span class="comment">//允许写入</span></span><br><span class="line">                MDR_in &lt;= SW;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                M_WE &lt;= <span class="number">1&#x27;b0</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">endcase</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// LC-3 OS</span></span><br><span class="line">    <span class="keyword">case</span> (mod)</span><br><span class="line">        <span class="number">2&#x27;d0</span>:</span><br><span class="line">        <span class="comment">//Write</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span> (BTN_clean[<span class="number">0</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                <span class="keyword">if</span> (cur != <span class="number">0</span>)</span><br><span class="line">                    cur &lt;= cur - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                mod &lt;= <span class="number">2&#x27;d2</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">2</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                mod &lt;= <span class="number">2&#x27;d1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">3</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                <span class="keyword">if</span> (cur != memory_range - <span class="number">1</span>)</span><br><span class="line">                    cur &lt;= cur + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">2&#x27;d1</span>:</span><br><span class="line">        <span class="comment">//Run</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span> (BTN_clean[<span class="number">1</span>])</span><br><span class="line">                mod &lt;= <span class="number">2&#x27;d0</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="number">2&#x27;d2</span>:</span><br><span class="line">        <span class="comment">//Jump</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span> (BTN_clean[<span class="number">0</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                <span class="keyword">if</span> (cur != <span class="number">0</span>)</span><br><span class="line">                    cur &lt;= cur - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">1</span>])</span><br><span class="line">                mod &lt;= <span class="number">2&#x27;d0</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">2</span>])</span><br><span class="line">                mod &lt;= <span class="number">2&#x27;d1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">3</span>])</span><br><span class="line">            <span class="keyword">begin</span></span><br><span class="line">                <span class="keyword">if</span> (cur != memory_range - <span class="number">1</span>)</span><br><span class="line">                    cur &lt;= cur + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (BTN_clean[<span class="number">4</span>])</span><br><span class="line">                cur &lt;= &#123;<span class="number">6&#x27;b0</span>,SW[<span class="number">9</span>:<span class="number">0</span>]&#125;;	<span class="comment">//跳转到SW对应的地址</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">            mod &lt;= <span class="number">2&#x27;d0</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">endcase</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// LC-3 交互</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">initial</span></span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    cur = <span class="number">16&#x27;h200</span>;</span><br><span class="line">    state = <span class="number">5&#x27;d0</span>;</span><br><span class="line">    mod = <span class="number">2&#x27;d0</span>;</span><br><span class="line">    ins_cnt = <span class="number">9&#x27;b0</span>;</span><br><span class="line">    PC = <span class="number">10&#x27;h200</span>;</span><br><span class="line">    M_WE = <span class="number">1&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">0</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">1</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">2</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">3</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">4</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">5</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">6</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line">    R[<span class="number">7</span>] = <span class="number">16&#x27;b0</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span>  LED = (mod == <span class="number">2&#x27;b0</span>) ? PC : &#123;ins_cnt,state,mod&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">clean_posedge cl_p_0(clk_25m,BTN[<span class="number">0</span>],BTN_clean[<span class="number">0</span>]);</span><br><span class="line">clean_posedge cl_p_1(clk_25m,BTN[<span class="number">1</span>],BTN_clean[<span class="number">1</span>]);</span><br><span class="line">clean_posedge cl_p_2(clk_25m,BTN[<span class="number">2</span>],BTN_clean[<span class="number">2</span>]);</span><br><span class="line">clean_posedge cl_p_3(clk_25m,BTN[<span class="number">3</span>],BTN_clean[<span class="number">3</span>]);</span><br><span class="line">clean_posedge cl_p_4(clk_25m,BTN[<span class="number">4</span>],BTN_clean[<span class="number">4</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// LC-3 显示</span></span><br><span class="line"><span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">wire</span>    [<span class="number">7</span>:<span class="number">0</span>]   digit0,digit1,digit2,digit3,digit4,digit5,digit6,digit7;    <span class="comment">//显示用数码</span></span><br><span class="line"><span class="keyword">wire</span>    [<span class="number">3</span>:<span class="number">0</span>]   num0,num1,num2,num3,num4,num5,num6,num7;            <span class="comment">//显示的数学值</span></span><br><span class="line"><span class="keyword">reg</span>     [<span class="number">16</span>:<span class="number">0</span>]  cnt;                            </span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> CLK)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">    cnt &lt;= cnt + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">case</span> (cnt[<span class="number">16</span>:<span class="number">14</span>])</span><br><span class="line">    <span class="number">3&#x27;b000</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b01111111</span>;</span><br><span class="line">        SSEG_CA &lt;= digit0;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b001</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b10111111</span>;</span><br><span class="line">        SSEG_CA &lt;= digit1;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b010</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b11011111</span>;</span><br><span class="line">        SSEG_CA &lt;= digit2;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b011</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b11101111</span>;</span><br><span class="line">        SSEG_CA &lt;= digit3;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b100</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b11110111</span>;</span><br><span class="line">        SSEG_CA &lt;= digit4;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b101</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b11111011</span>;</span><br><span class="line">        SSEG_CA &lt;= digit5;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b110</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b11111101</span>;</span><br><span class="line">        SSEG_CA &lt;= digit6;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="number">3&#x27;b111</span>:</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">        SSEG_AN &lt;= <span class="number">8&#x27;b11111110</span>;</span><br><span class="line">        SSEG_CA &lt;= digit7;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">endcase</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">assign</span>  num0 = cur[<span class="number">15</span>:<span class="number">12</span>];</span><br><span class="line"><span class="keyword">assign</span>  num1 = cur[<span class="number">11</span>:<span class="number">8</span>];</span><br><span class="line"><span class="keyword">assign</span>  num2 = cur[<span class="number">7</span>:<span class="number">4</span>];</span><br><span class="line"><span class="keyword">assign</span>  num3 = cur[<span class="number">3</span>:<span class="number">0</span>];</span><br><span class="line"><span class="keyword">assign</span>  num4 = MDR_out[<span class="number">15</span>:<span class="number">12</span>];</span><br><span class="line"><span class="keyword">assign</span>  num5 = MDR_out[<span class="number">11</span>:<span class="number">8</span>];</span><br><span class="line"><span class="keyword">assign</span>  num6 = MDR_out[<span class="number">7</span>:<span class="number">4</span>];</span><br><span class="line"><span class="keyword">assign</span>  num7 = MDR_out[<span class="number">3</span>:<span class="number">0</span>];</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_0(</span><br><span class="line"><span class="variable">.a</span>      (num0),</span><br><span class="line"><span class="variable">.spo</span>    (digit0));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_1(</span><br><span class="line"><span class="variable">.a</span>      (num1),</span><br><span class="line"><span class="variable">.spo</span>    (digit1));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_2(</span><br><span class="line"><span class="variable">.a</span>      (num2),</span><br><span class="line"><span class="variable">.spo</span>    (digit2));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_3(</span><br><span class="line"><span class="variable">.a</span>      (num3),</span><br><span class="line"><span class="variable">.spo</span>    (digit3));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_4(</span><br><span class="line"><span class="variable">.a</span>      (num4),</span><br><span class="line"><span class="variable">.spo</span>    (digit4));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_5(</span><br><span class="line"><span class="variable">.a</span>      (num5),</span><br><span class="line"><span class="variable">.spo</span>    (digit5));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_6(</span><br><span class="line"><span class="variable">.a</span>      (num6),</span><br><span class="line"><span class="variable">.spo</span>    (digit6));</span><br><span class="line">dist_mem_gen_1 dist_mem_gen_7(</span><br><span class="line"><span class="variable">.a</span>      (num7),</span><br><span class="line"><span class="variable">.spo</span>    (digit7));</span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+<p>丑陋，但是确实能起效。<br>我仍不知道我当时是怎么一遍跑通的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FPGA/" rel="tag"># FPGA</a>
+              <a href="/tags/LC-3/" rel="tag"># LC-3</a>
+              <a href="/tags/CPU/" rel="tag"># CPU</a>
+              <a href="/tags/Verilog/" rel="tag"># Verilog</a>
+          </div>
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LC-3%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">LC-3介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">操作说明：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A"><span class="nav-number">5.</span> <span class="nav-text">代码解释</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%8C%89%E9%94%AE%E5%8E%BB%E6%8A%96%E5%8A%A8%E5%B9%B6%E5%8F%96%E4%B8%8A%E5%8D%87%E6%B2%BF%E7%9A%84%E6%A8%A1%E5%9D%97"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">按键去抖动并取上升沿的模块</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#LC-3%E4%B8%BB%E6%A8%A1%E5%9D%97"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">LC-3主模块</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Sumbon</p>
+  <div class="site-description" itemprop="description">Sumbon的博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sumbon</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
