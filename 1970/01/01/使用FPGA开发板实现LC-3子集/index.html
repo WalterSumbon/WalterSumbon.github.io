@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/22538395-525d4e87c6375bb3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/22538395-5b9086dfa50efcd4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="article:published_time" content="1970-01-01T00:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-22T05:19:46.790Z">
+<meta property="article:modified_time" content="2021-01-22T08:46:35.747Z">
 <meta property="article:author" content="Sumbon">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/22538395-82f9ddce08831e64.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/420/format/webp">
@@ -182,7 +182,43 @@
 <li>内存中TRAP矢量表x0025处的内容改为了xFFFF，这样在执行HALT指令时可以直接将PC设为非法值从而触发停机。</li>
 <li>TRAP矢量表中其他地址的内容都指向了非法值。</li>
 </ul>
-<h3 id="操作说明："><a href="#操作说明：" class="headerlink" title="操作说明："></a>操作说明：</h3><p>为了为下文的介绍做铺垫，先介绍一些理解交互操作所需的程序变量：<br>|  变量名  | 含义                                                 |<br>| :——: | :————————————————— |<br>| 内存地址 | 数据在内存中的地址，范围 0~2<sup>10</sup>-1          |<br>| 内存内容 | 内存中存储的内容，在LC-3的实现中不严格区分指令和数据 |<br>|    PC    | program counter，指向当前执行的指令在内存中的地址    |<br>|   cur    | 光标(cursor)，表示当前被数码管显示的内存地址         |<br>|   cnt    | count，用来计数执行的指令条数                        |<br>|   mod    | 交互模式状态代码                                     |<br>|  state   | 内核状态机状态代码                                   |</p>
+<h3 id="操作说明："><a href="#操作说明：" class="headerlink" title="操作说明："></a>操作说明：</h3><p>为了为下文的介绍做铺垫，先介绍一些理解交互操作所需的程序变量：</p>
+<table>
+<thead>
+<tr>
+<th align="center">变量名</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">内存地址</td>
+<td align="left">数据在内存中的地址，范围 0~2<sup>10</sup>-1</td>
+</tr>
+<tr>
+<td align="center">内存内容</td>
+<td align="left">内存中存储的内容，在LC-3的实现中不严格区分指令和数据</td>
+</tr>
+<tr>
+<td align="center">PC</td>
+<td align="left">program counter，指向当前执行的指令在内存中的地址</td>
+</tr>
+<tr>
+<td align="center">cur</td>
+<td align="left">光标(cursor)，表示当前被数码管显示的内存地址</td>
+</tr>
+<tr>
+<td align="center">cnt</td>
+<td align="left">count，用来计数执行的指令条数</td>
+</tr>
+<tr>
+<td align="center">mod</td>
+<td align="left">交互模式状态代码</td>
+</tr>
+<tr>
+<td align="center">state</td>
+<td align="left">内核状态机状态代码</td>
+</tr>
+</tbody></table>
 <p>注：其实整个LC-3中只有一个有限状态机，但为了方便理解和编写代码，将状态机的状态代码分为了<code>mod</code>和<code>state</code>两部分，这种表述与只用一个状态变量是等价的。</p>
 <p>下面进行详细介绍。</p>
 <p>为了方便与用户的交互，LC-3 Simulator总共设计了3种模式: </p>
@@ -216,7 +252,27 @@
 </tr>
 </tbody></table>
 <p>（最后一种不会用到，但是要注意自启动问题）</p>
-<p>LC-3 的内核，也就是执行程序的核心部分，使用有限状态自动机进行描述。共有32种状态，大部分状态与具体的指令逻辑有关，不做特别介绍，可以参见代码。下面说明一些关键的状态：<br>| state | 描述                                                         |<br>| :—: | :———————————————————– |<br>|   0   | 停机状态                                                     |<br>|   1   | 将内存的写使能(write enable)信号置为0，同时cnt加一           |<br>|   2   | 取指令，PC加一，同时检查PC是否为非法值，如果是，跳转到状态0(停机) |</p>
+<p>LC-3 的内核，也就是执行程序的核心部分，使用有限状态自动机进行描述。共有32种状态，大部分状态与具体的指令逻辑有关，不做特别介绍，可以参见代码。下面说明一些关键的状态：</p>
+<table>
+<thead>
+<tr>
+<th align="center">state</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="left">停机状态</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="left">将内存的写使能(write enable)信号置为0，同时cnt加一</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="left">取指令，PC加一，同时检查PC是否为非法值，如果是，跳转到状态0(停机)</td>
+</tr>
+</tbody></table>
 <p>显示部分使用的是板载的数码管和LED灯：</p>
 <ul>
 <li><p>数码管</p>
@@ -273,7 +329,27 @@
 <p>其状态转移图如下：<br><img src="https://upload-images.jianshu.io/upload_images/22538395-f88c35ef073389b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mod切换.png"></p>
 <h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>为了方便测试，在FPGA中内置了求解最大公因数的程序。<br>以下是其对应的LC-3汇编程序描述：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">        .ORIG	x0200</span><br><span class="line">        LDI		R0,A</span><br><span class="line">        LDI		R1,B</span><br><span class="line">        AND		R0,R0,R0</span><br><span class="line">        BRp		#2</span><br><span class="line">        NOT		R0,R0</span><br><span class="line">        ADD		R0,R0,#1</span><br><span class="line">        AND		R1,R1,R1</span><br><span class="line">        BRn		#2</span><br><span class="line">        NOT		R1,R1</span><br><span class="line">        ADD		R1,R1,#1</span><br><span class="line">TEST	ADD		R2,R1,R0</span><br><span class="line">        BRz		ANS</span><br><span class="line">        BRn		ELSE</span><br><span class="line">        AND		R2,R1,R1</span><br><span class="line">TEST1	ADD		R3,R2,R0</span><br><span class="line">        ADD		R3,R3,R2</span><br><span class="line">        BRp		CASE1</span><br><span class="line">        ADD		R0,R0,R2</span><br><span class="line">        BRnzp	TEST</span><br><span class="line">CASE1	ADD 	R2,R2,R2</span><br><span class="line">        BRnzp	TEST1</span><br><span class="line">ELSE	AND		R2,R0,R0</span><br><span class="line">TEST2	ADD		R3,R2,R1</span><br><span class="line">        ADD		R3,R2,R3</span><br><span class="line">        BRn		CASE2</span><br><span class="line">        ADD		R1,R1,R2</span><br><span class="line">        BRnzp	TEST</span><br><span class="line">CASE2	ADD		R2,R2,R2</span><br><span class="line">        BRnzp	TEST2</span><br><span class="line">ANS		STI		R0,C</span><br><span class="line">        HALT</span><br><span class="line"></span><br><span class="line">A		.FILL	x0300</span><br><span class="line">B		.FILL	x0301</span><br><span class="line">C		.FILL	x0302</span><br><span class="line">        .END</span><br></pre></td></tr></table></figure>
-<p>对其中出现的伪指令的解释：<br>| 伪指令 | 作用                                                   |<br>| :—– | :—————————————————– |<br>| .ORIG  | 声明程序起始地址                                       |<br>| .FILL  | 直接填充数据。例如<code>.FILL x0300</code>表示该行的内容为<code>x0300</code> |<br>| .END   | 表示程序到此为止                                       |</p>
+<p>对其中出现的伪指令的解释：  </p>
+<table>
+<thead>
+<tr>
+<th align="left">伪指令</th>
+<th align="left">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">.ORIG</td>
+<td align="left">声明程序起始地址</td>
+</tr>
+<tr>
+<td align="left">.FILL</td>
+<td align="left">直接填充数据。例如<code>.FILL x0300</code>表示该行的内容为<code>x0300</code></td>
+</tr>
+<tr>
+<td align="left">.END</td>
+<td align="left">表示程序到此为止</td>
+</tr>
+</tbody></table>
 <p>对应的二进制码为(<del>随便看看就行，谁会去仔细看这一大堆的01啊</del>)：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">0000001000000000</span><br><span class="line">1010000000011110</span><br><span class="line">1010001000011110</span><br><span class="line">0101000000000000</span><br><span class="line">0000001000000010</span><br><span class="line">1001000000111111</span><br><span class="line">0001000000100001</span><br><span class="line">0101001001000001</span><br><span class="line">0000100000000010</span><br><span class="line">1001001001111111</span><br><span class="line">0001001001100001</span><br><span class="line">0001010001000000</span><br><span class="line">0000010000010001</span><br><span class="line">0000100000001000</span><br><span class="line">0101010001000001</span><br><span class="line">0001011010000000</span><br><span class="line">0001011011000010</span><br><span class="line">0000001000000010</span><br><span class="line">0001000000000010</span><br><span class="line">0000111111110111</span><br><span class="line">0001010010000010</span><br><span class="line">0000111111111001</span><br><span class="line">0101010000000000</span><br><span class="line">0001011010000001</span><br><span class="line">0001011010000011</span><br><span class="line">0000100000000010</span><br><span class="line">0001001001000010</span><br><span class="line">0000111111101111</span><br><span class="line">0001010010000010</span><br><span class="line">0000111111111001</span><br><span class="line">1011000000000011</span><br><span class="line">1111000000100101</span><br><span class="line">0000001100000000</span><br><span class="line">0000001100000001</span><br><span class="line">0000001100000010</span><br></pre></td></tr></table></figure>
 <p>测试数据：<br>0000000011110111 (x00F7 = 13 * 19)<br>0000000010011100 (x009C = 13 * 12)<br>预期结果：<br>0000000000001101 (x000d = 13)<br>测试照片：<br><img src="https://upload-images.jianshu.io/upload_images/22538395-0a6053ee245344f3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="x0300.jpg"></p>
