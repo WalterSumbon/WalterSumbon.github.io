@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0302(before).jpg">
 <meta property="og:image" content="http://waltersumbon.github.io/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/x0302(after).jpg">
 <meta property="article:published_time" content="2021-01-22T08:58:31.000Z">
-<meta property="article:modified_time" content="2021-01-22T15:53:20.650Z">
+<meta property="article:modified_time" content="2021-01-23T08:33:14.637Z">
 <meta property="article:author" content="Sumbon">
 <meta property="article:tag" content="FPGA">
 <meta property="article:tag" content="LC-3">
@@ -203,10 +203,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-01-22 16:58:31 / 修改时间：23:53:20" itemprop="dateCreated datePublished" datetime="2021-01-22T16:58:31+08:00">2021-01-22</time>
+              <time title="创建时间：2021-01-22 16:58:31" itemprop="dateCreated datePublished" datetime="2021-01-22T16:58:31+08:00">2021-01-22</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-23 16:33:14" itemprop="dateModified" datetime="2021-01-23T16:33:14+08:00">2021-01-23</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -466,7 +472,7 @@
 </tbody></table>
 <p>其状态转移图如下：<br><img src="/2021/01/22/%E4%BD%BF%E7%94%A8FPGA%E5%BC%80%E5%8F%91%E6%9D%BF%E5%AE%9E%E7%8E%B0LC-3%E5%AD%90%E9%9B%86/mod%E5%88%87%E6%8D%A2.jpg" alt="mod切换"></p>
 <h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>为了方便测试，在FPGA中内置了求解最大公因数的程序。<br>以下是其对应的LC-3汇编程序描述：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">        .ORIG	x0200</span><br><span class="line">        LDI		R0,A</span><br><span class="line">        LDI		R1,B</span><br><span class="line">        AND		R0,R0,R0</span><br><span class="line">        BRp		#2</span><br><span class="line">        NOT		R0,R0</span><br><span class="line">        ADD		R0,R0,#1</span><br><span class="line">        AND		R1,R1,R1</span><br><span class="line">        BRn		#2</span><br><span class="line">        NOT		R1,R1</span><br><span class="line">        ADD		R1,R1,#1</span><br><span class="line">TEST	ADD		R2,R1,R0</span><br><span class="line">        BRz		ANS</span><br><span class="line">        BRn		ELSE</span><br><span class="line">        AND		R2,R1,R1</span><br><span class="line">TEST1	ADD		R3,R2,R0</span><br><span class="line">        ADD		R3,R3,R2</span><br><span class="line">        BRp		CASE1</span><br><span class="line">        ADD		R0,R0,R2</span><br><span class="line">        BRnzp	TEST</span><br><span class="line">CASE1	ADD 	R2,R2,R2</span><br><span class="line">        BRnzp	TEST1</span><br><span class="line">ELSE	AND		R2,R0,R0</span><br><span class="line">TEST2	ADD		R3,R2,R1</span><br><span class="line">        ADD		R3,R2,R3</span><br><span class="line">        BRn		CASE2</span><br><span class="line">        ADD		R1,R1,R2</span><br><span class="line">        BRnzp	TEST</span><br><span class="line">CASE2	ADD		R2,R2,R2</span><br><span class="line">        BRnzp	TEST2</span><br><span class="line">ANS		STI		R0,C</span><br><span class="line">        HALT</span><br><span class="line"></span><br><span class="line">A		.FILL	x0300</span><br><span class="line">B		.FILL	x0301</span><br><span class="line">C		.FILL	x0302</span><br><span class="line">        .END</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">        .ORIG   x0200</span><br><span class="line">        LDI     R0,A</span><br><span class="line">        LDI     R1,B</span><br><span class="line">        AND     R0,R0,R0</span><br><span class="line">        BRp     #2</span><br><span class="line">        NOT     R0,R0</span><br><span class="line">        ADD     R0,R0,#1</span><br><span class="line">        AND     R1,R1,R1</span><br><span class="line">        BRn     #2</span><br><span class="line">        NOT     R1,R1</span><br><span class="line">        ADD     R1,R1,#1</span><br><span class="line">TEST    ADD     R2,R1,R0</span><br><span class="line">        BRz     ANS</span><br><span class="line">        BRn     ELSE</span><br><span class="line">        AND     R2,R1,R1</span><br><span class="line">TEST1   ADD     R3,R2,R0</span><br><span class="line">        ADD     R3,R3,R2</span><br><span class="line">        BRp     CASE1</span><br><span class="line">        ADD     R0,R0,R2</span><br><span class="line">        BRnzp   TEST</span><br><span class="line">CASE1   ADD     R2,R2,R2</span><br><span class="line">        BRnzp   TEST1</span><br><span class="line">ELSE    AND     R2,R0,R0</span><br><span class="line">TEST2   ADD     R3,R2,R1</span><br><span class="line">        ADD     R3,R2,R3</span><br><span class="line">        BRn     CASE2</span><br><span class="line">        ADD     R1,R1,R2</span><br><span class="line">        BRnzp   TEST</span><br><span class="line">CASE2   ADD     R2,R2,R2</span><br><span class="line">        BRnzp   TEST2</span><br><span class="line">ANS     STI     R0,C</span><br><span class="line">        HALT</span><br><span class="line"></span><br><span class="line">A       .FILL   x0300</span><br><span class="line">B       .FILL   x0301</span><br><span class="line">C       .FILL   x0302</span><br><span class="line">        .END</span><br></pre></td></tr></table></figure>
 <p>对其中出现的伪指令的解释：  </p>
 <table>
 <thead>
@@ -621,9 +627,6 @@
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
         <a href="https://github.com/waltersumbon" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waltersumbon" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="/waltersumbon@gmail.com" title="E-Mail → waltersumbon@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
   </div>
 
