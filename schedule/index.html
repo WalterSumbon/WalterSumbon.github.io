@@ -361,7 +361,13 @@
 
           </div>
           
-    <div class="comments" id="gitalk-container"></div>
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="WalterSumbon/WalterSumbon.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -545,26 +551,6 @@
   
 
   
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
-
-<script>
-NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
-    var gitalk = new Gitalk({
-      clientID    : 'a424b61a98e470cf9865',
-      clientSecret: '3989f74659b7583433bc9ebf36553ccef76abd18',
-      repo        : 'WalterSumbon.github.io',
-      owner       : 'WalterSumbon',
-      admin       : ['WalterSumbon'],
-      id          : 'b9e1b6fa707f630bcc50d21ef0899554',
-        language: '',
-      distractionFreeMode: true
-    });
-    gitalk.render('gitalk-container');
-  }, window.Gitalk);
-});
-</script>
 
 </body>
 </html>
