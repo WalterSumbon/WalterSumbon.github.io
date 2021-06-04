@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://waltersumbon.github.io/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/running.png">
 <meta property="og:image" content="http://waltersumbon.github.io/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/result.png">
 <meta property="article:published_time" content="2021-05-31T14:54:56.000Z">
-<meta property="article:modified_time" content="2021-06-04T05:14:35.353Z">
+<meta property="article:modified_time" content="2021-06-04T05:35:02.813Z">
 <meta property="article:author" content="Sumbon">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="安装指南">
@@ -208,7 +208,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-04 13:14:35" itemprop="dateModified" datetime="2021-06-04T13:14:35+08:00">2021-06-04</time>
+                <time title="修改时间：2021-06-04 13:35:02" itemprop="dateModified" datetime="2021-06-04T13:35:02+08:00">2021-06-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -241,7 +241,8 @@
         <p>Hadoop安装、伪分布式配置、运行WordCount示例程序的指南。</p>
 <p>作者使用的环境是64位WSL2 Ubuntu 20.04。</p>
 <a id="more"></a>
-<h2 id="OpenJDK8安装"><a href="#OpenJDK8安装" class="headerlink" title="OpenJDK8安装"></a>OpenJDK8安装</h2><blockquote>
+<h2 id="openjdk8安装">OpenJDK8安装</h2>
+<blockquote>
 <p>Hadoop框架是使用Java编写的，因此需要一个与之兼容的Java Runtime Environment (JRE) 和Java Development Kit (JDK)。</p>
 <p>当前<strong>Apache Hadoop 3.x 完全支持 Java 8</strong>。</p>
 </blockquote>
@@ -252,7 +253,8 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install openjdk-8-jdk -y</span><br></pre></td></tr></table></figure>
 <p>检查是否安装成功：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -version; javac -version</span><br></pre></td></tr></table></figure>
-<h2 id="创建一个非Root用户"><a href="#创建一个非Root用户" class="headerlink" title="创建一个非Root用户"></a>创建一个非Root用户</h2><p>如果使用root用户启动Hadoop的话会报错（本人就踩过这个坑）。</p>
+<h2 id="创建一个非root用户">创建一个非Root用户</h2>
+<p>如果使用root用户启动Hadoop的话会报错（本人就踩过这个坑）。</p>
 <blockquote>
 <p>如果你的环境中已经有可用的非root用户了，但是不想弄乱自己原来的用户环境，也可以按照下面的操作创建一个新的用户（而且这样后面很多步骤可以直接复制指令代码而不用修改）。</p>
 </blockquote>
@@ -263,16 +265,19 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">usermod -a -G sudo hdoop</span><br></pre></td></tr></table></figure>
 <p>切换到<code>hdoop</code>用户：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su hdoop</span><br></pre></td></tr></table></figure>
-<h2 id="安装OpenSSH"><a href="#安装OpenSSH" class="headerlink" title="安装OpenSSH"></a>安装OpenSSH</h2><p>如果你的环境中已经有可用的ssh，可以跳过这一步。</p>
+<h2 id="安装openssh">安装OpenSSH</h2>
+<p>如果你的环境中已经有可用的ssh，可以跳过这一步。</p>
 <p>安装指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install openssh-server openssh-client -y</span><br></pre></td></tr></table></figure>
-<h2 id="设置无密码SSH"><a href="#设置无密码SSH" class="headerlink" title="设置无密码SSH"></a>设置无密码SSH</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -P <span class="string">&#x27;&#x27;</span> -f ~/.ssh/id_rsa</span><br><span class="line">cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line">chmod 0600 ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+<h2 id="设置无密码ssh">设置无密码SSH</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -P <span class="string">&#x27;&#x27;</span> -f ~/.ssh/id_rsa</span><br><span class="line">cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line">chmod 0600 ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
 <p>使用<code>hdoop</code>用户尝试以下指令，如果能成功连接，则设置成功：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh localhost</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>这个指令会ssh连接你当前的机器（我连我自己），返回一个新的shell给你，可以用<code>exit</code>指令退出（不退出也无妨）。</p>
 </blockquote>
-<h2 id="安装Hadoop"><a href="#安装Hadoop" class="headerlink" title="安装Hadoop"></a>安装Hadoop</h2><p>作者用的是清华的镜像（<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/">链接</a>)，里面提供各个版本的hadoop。</p>
+<h2 id="安装hadoop">安装Hadoop</h2>
+<p>作者用的是清华的镜像（<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/">链接</a>)，里面提供各个版本的hadoop。</p>
 <p>这里作者选用的是<code>hadoop-3.3.0</code>文件夹里的<code>hadoop-3.3.0-aarch64.tar.gz</code>文件。这是一个为<code>aarch64</code>平台编译好了的安装包(解压之后就可以直接用)。<strong>请根据自己的平台选择不同的版本</strong>。</p>
 <p>下载安装包（链接请换成你自己选择的安装包对应的链接）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.3.0/hadoop-3.3.0-aarch64.tar.gz</span><br></pre></td></tr></table></figure>
@@ -282,7 +287,8 @@
 <blockquote>
 <p>如果你是在别的路径解压的，请记好解压出来的文件夹所在的位置，下一节会用到。</p>
 </blockquote>
-<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><p>编辑<code>~/.bashrc</code>文件（这里使用vim）：</p>
+<h2 id="配置环境变量">配置环境变量</h2>
+<p>编辑<code>~/.bashrc</code>文件（这里使用vim）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim ~/.bashrc</span><br></pre></td></tr></table></figure>
 <p>在文件末尾添加以下内容：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Hadoop Related Options</span></span><br><span class="line"><span class="built_in">export</span> HADOOP_HOME=/home/hdoop/hadoop-3.3.0</span><br><span class="line"><span class="built_in">export</span> HADOOP_INSTALL=<span class="variable">$HADOOP_HOME</span></span><br><span class="line"><span class="built_in">export</span> HADOOP_MAPRED_HOME=<span class="variable">$HADOOP_HOME</span></span><br><span class="line"><span class="built_in">export</span> HADOOP_COMMON_HOME=<span class="variable">$HADOOP_HOME</span></span><br><span class="line"><span class="built_in">export</span> HADOOP_HDFS_HOME=<span class="variable">$HADOOP_HOME</span></span><br><span class="line"><span class="built_in">export</span> YARN_HOME=<span class="variable">$HADOOP_HOME</span></span><br><span class="line"><span class="built_in">export</span> HADOOP_COMMON_LIB_NATIVE_DIR=<span class="variable">$HADOOP_HOME</span>/lib/native</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$HADOOP_HOME</span>/sbin:<span class="variable">$HADOOP_HOME</span>/bin</span><br><span class="line"><span class="built_in">export</span> HADOOP_OPTS=<span class="string">&quot;-Djava.library.path=<span class="variable">$HADOOP_HOME</span>/lib/native&quot;</span></span><br></pre></td></tr></table></figure>
@@ -292,20 +298,22 @@
 <p>保存并退出。</p>
 <p><strong>执行以下命令使得配置立即生效：</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
-<h2 id="编辑hadoop-env-sh文件"><a href="#编辑hadoop-env-sh文件" class="headerlink" title="编辑hadoop-env.sh文件"></a>编辑hadoop-env.sh文件</h2><blockquote>
+<h2 id="编辑hadoop-env.sh文件">编辑hadoop-env.sh文件</h2>
+<blockquote>
 <p>hadoop-env.sh文件是配置YARN, <a target="_blank" rel="noopener" href="https://phoenixnap.com/kb/what-is-hdfs">HDFS</a>, <a target="_blank" rel="noopener" href="https://phoenixnap.com/kb/hadoop-mapreduce">MapReduce</a>以及Hadoop相关项目的主要文件。</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hadoop-env.sh</span><br></pre></td></tr></table></figure>
 <p>找到文件中含有<code>export JAVA_HOME=</code>的那一行，去掉那一行的注释（即去掉开头的<code>#</code>）</p>
 <p>修改该行的内容为：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/java_home.png" alt></p>
+<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/java_home.png"></p>
 <p>上面的路径值可以换成你自己的java所在的路径。</p>
 <p>如果你想定位自己的java所在的路径的话，可以执行以下命令(注意命令里是反引号)：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readlink -f `<span class="built_in">which</span> javac`</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/find_java_home.png" alt></p>
+<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/find_java_home.png"></p>
 <p>红框里的就是你需要的路径啦。</p>
-<h2 id="编辑core-site-xml文件"><a href="#编辑core-site-xml文件" class="headerlink" title="编辑core-site.xml文件"></a>编辑core-site.xml文件</h2><blockquote>
+<h2 id="编辑core-site.xml文件">编辑core-site.xml文件</h2>
+<blockquote>
 <p>core-site.xml定义了HDFS和Hadoop core的属性。</p>
 <p>为了配置伪分布模式，需要指定NameNode的URL和map reduce过程所用的临时文件夹。</p>
 </blockquote>
@@ -318,7 +326,8 @@
 <p>这里创建的文件夹路径和上面的configuration第四行<code>value</code>里的路径一致。</p>
 <p>因此你可以把文件夹创建到不同的位置或者叫不同的名字，但是记得在配置文件中更改对应的内容。</p>
 </blockquote>
-<h2 id="编辑hdfs-site-xml文件"><a href="#编辑hdfs-site-xml文件" class="headerlink" title="编辑hdfs-site.xml文件"></a>编辑hdfs-site.xml文件</h2><blockquote>
+<h2 id="编辑hdfs-site.xml文件">编辑hdfs-site.xml文件</h2>
+<blockquote>
 <p>这个文件决定了node metadata、fsimage file和edit log file文件存放的位置。</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hdfs-site.xml</span><br></pre></td></tr></table></figure>
@@ -329,43 +338,49 @@
 <blockquote>
 <p>同样，如果你想把目录建在其他位置，记得更改configuration中对应的地方。</p>
 </blockquote>
-<h2 id="修改mapred-site-xml文件"><a href="#修改mapred-site-xml文件" class="headerlink" title="修改mapred-site.xml文件"></a>修改mapred-site.xml文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim <span class="variable">$HADOOP_HOME</span>/etc/hadoop/mapred-site.xml</span><br></pre></td></tr></table></figure>
+<h2 id="修改mapred-site.xml文件">修改mapred-site.xml文件</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim <span class="variable">$HADOOP_HOME</span>/etc/hadoop/mapred-site.xml</span><br></pre></td></tr></table></figure>
 <p>将configuration部分改为以下内容：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.framework.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>yarn<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="修改yarn-site-xml文件"><a href="#修改yarn-site-xml文件" class="headerlink" title="修改yarn-site.xml文件"></a>修改yarn-site.xml文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim <span class="variable">$HADOOP_HOME</span>/etc/hadoop/yarn-site.xml</span><br></pre></td></tr></table></figure>
+<h2 id="修改yarn-site.xml文件">修改yarn-site.xml文件</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim <span class="variable">$HADOOP_HOME</span>/etc/hadoop/yarn-site.xml</span><br></pre></td></tr></table></figure>
 <p>将configuration部分改为以下内容：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services.mapreduce.shuffle.class<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>org.apache.hadoop.mapred.ShuffleHandler<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>127.0.0.1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.acl.enable<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>0<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.env-whitelist<span class="tag">&lt;/<span class="name">name</span>&gt;</span>   </span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PERPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="Format-HDFS-NameNode"><a href="#Format-HDFS-NameNode" class="headerlink" title="Format HDFS NameNode"></a>Format HDFS NameNode</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs namenode -format</span><br></pre></td></tr></table></figure>
+<h2 id="format-hdfs-namenode">Format HDFS NameNode</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs namenode -format</span><br></pre></td></tr></table></figure>
 <p>看到<code>SHUTDOWN_MSG</code>说明该过程结束了。</p>
-<h2 id="启动Hadoop集群"><a href="#启动Hadoop集群" class="headerlink" title="启动Hadoop集群"></a>启动Hadoop集群</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start-dfs.sh</span><br><span class="line">start-yarn.sh</span><br></pre></td></tr></table></figure>
+<h2 id="启动hadoop集群">启动Hadoop集群</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start-dfs.sh</span><br><span class="line">start-yarn.sh</span><br></pre></td></tr></table></figure>
 <p>使用下面这个简单的指令检查是否正常启动：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
 <p>应该显示有如下几项：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ResourceManager  </span><br><span class="line">DataNode         </span><br><span class="line">SecondaryNameNode</span><br><span class="line">NameNode</span><br><span class="line">NodeManager      </span><br><span class="line">Jps              </span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/nodes.png" alt></p>
-<h2 id="运行WordCount示例程序"><a href="#运行WordCount示例程序" class="headerlink" title="运行WordCount示例程序"></a>运行WordCount示例程序</h2><blockquote>
+<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/nodes.png"></p>
+<h2 id="运行wordcount示例程序">运行WordCount示例程序</h2>
+<blockquote>
 <p>当然，在此之前你需要先按照上面的步骤启动hadoop集群。</p>
 </blockquote>
 <p>首先要在HDFS中创建文件夹：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -mkdir -p /user/hadoop/input</span><br></pre></td></tr></table></figure>
 <p>将输入文件拷贝到这个文件夹中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -put work/para/input/*.txt /user/hadoop/input</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -put ~/work/para/input/*.txt /user/hadoop/input</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>命令中的<code>work/para/input/*.txt</code>换成你自己的输入文件所在路径。下同。</p>
+<p>命令中的<code>~/work/para/input/*.txt</code>换成你自己的输入文件所在路径。下同。</p>
 </blockquote>
-<p>通过以下指令查看文件是否拷贝，以及内容是否一致：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -ls /user/hadoop/input</span><br><span class="line">hdfs dfs -cat /user/hadoop/input/Input1.txt</span><br></pre></td></tr></table></figure><br>编译运行WordCount程序：</p>
+<p>通过以下指令查看文件是否拷贝，以及内容是否一致： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -ls /user/hadoop/input</span><br><span class="line">hdfs dfs -cat /user/hadoop/input/Input1.txt</span><br></pre></td></tr></table></figure> 编译运行WordCount程序：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> CLASSPATH=$(<span class="variable">$HADOOP_HOME</span>/bin/hadoop classpath):<span class="variable">$CLASSPATH</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译</span></span><br><span class="line">mkdir WordCount</span><br><span class="line">javac -d WordCount WordCount.java</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打包成jar</span></span><br><span class="line">jar -cvf wordcount.jar -C WordCount .</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行</span></span><br><span class="line">hadoop jar wordcount.jar WordCount /user/hadoop/input/ /user/hadoop/output/</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>要注意的是，如果HDFS中指定的输出文件夹已经存在(此处对应的是<code>/user/hadoop/output/</code>)，则会报错。</p>
 </blockquote>
 <p>运行中：</p>
-<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/running.png" alt></p>
+<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/running.png"></p>
 <p>查看运行结果：</p>
-<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/result.png" alt></p>
+<p><img src="/2021/05/31/Hadoop%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/result.png"></p>
 <blockquote>
 <p>[WARNING] 即使是这么小的一个示例程序也几近将我的CPU和内存吞吃殆尽。</p>
 </blockquote>
-<h2 id="无关的碎碎念"><a href="#无关的碎碎念" class="headerlink" title="无关的碎碎念"></a>无关的碎碎念</h2><p>本博客是在完成USTC2021春并行计算课程实验4的同时写成的。</p>
+<h2 id="无关的碎碎念">无关的碎碎念</h2>
+<p>本博客是在完成USTC2021春并行计算课程实验4的同时写成的。</p>
 <p>最开始按照课程提供的<del>祖传</del>实验文档安装，不仅版本老旧过时，还出现了一众难以名状的错误。</p>
 <p>后来助教提供了一篇新的文档，依旧运行失败(仅代表个人实践结果)。</p>
 <p>再后来，我选择放弃参考学校这边的混沌文档，按照<a target="_blank" rel="noopener" href="https://phoenixnap.com/kb/install-hadoop-ubuntu#ftoc-heading-1">phoenixNAP的一篇文章</a>最终安装成功（这篇文章除了<code>.bashrc</code>部分有些typo以外其他地方基本没有错误，是我安装和配置的主要参考）。</p>
@@ -462,7 +477,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenJDK8%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">OpenJDK8安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E9%9D%9ERoot%E7%94%A8%E6%88%B7"><span class="nav-number">2.</span> <span class="nav-text">创建一个非Root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85OpenSSH"><span class="nav-number">3.</span> <span class="nav-text">安装OpenSSH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E6%97%A0%E5%AF%86%E7%A0%81SSH"><span class="nav-number">4.</span> <span class="nav-text">设置无密码SSH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Hadoop"><span class="nav-number">5.</span> <span class="nav-text">安装Hadoop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">6.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91hadoop-env-sh%E6%96%87%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">编辑hadoop-env.sh文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91core-site-xml%E6%96%87%E4%BB%B6"><span class="nav-number">8.</span> <span class="nav-text">编辑core-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91hdfs-site-xml%E6%96%87%E4%BB%B6"><span class="nav-number">9.</span> <span class="nav-text">编辑hdfs-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9mapred-site-xml%E6%96%87%E4%BB%B6"><span class="nav-number">10.</span> <span class="nav-text">修改mapred-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9yarn-site-xml%E6%96%87%E4%BB%B6"><span class="nav-number">11.</span> <span class="nav-text">修改yarn-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Format-HDFS-NameNode"><span class="nav-number">12.</span> <span class="nav-text">Format HDFS NameNode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8Hadoop%E9%9B%86%E7%BE%A4"><span class="nav-number">13.</span> <span class="nav-text">启动Hadoop集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8CWordCount%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F"><span class="nav-number">14.</span> <span class="nav-text">运行WordCount示例程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E5%85%B3%E7%9A%84%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="nav-number">15.</span> <span class="nav-text">无关的碎碎念</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#openjdk8%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">OpenJDK8安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E9%9D%9Eroot%E7%94%A8%E6%88%B7"><span class="nav-number">2.</span> <span class="nav-text">创建一个非Root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85openssh"><span class="nav-number">3.</span> <span class="nav-text">安装OpenSSH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E6%97%A0%E5%AF%86%E7%A0%81ssh"><span class="nav-number">4.</span> <span class="nav-text">设置无密码SSH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85hadoop"><span class="nav-number">5.</span> <span class="nav-text">安装Hadoop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">6.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91hadoop-env.sh%E6%96%87%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">编辑hadoop-env.sh文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91core-site.xml%E6%96%87%E4%BB%B6"><span class="nav-number">8.</span> <span class="nav-text">编辑core-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91hdfs-site.xml%E6%96%87%E4%BB%B6"><span class="nav-number">9.</span> <span class="nav-text">编辑hdfs-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9mapred-site.xml%E6%96%87%E4%BB%B6"><span class="nav-number">10.</span> <span class="nav-text">修改mapred-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9yarn-site.xml%E6%96%87%E4%BB%B6"><span class="nav-number">11.</span> <span class="nav-text">修改yarn-site.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#format-hdfs-namenode"><span class="nav-number">12.</span> <span class="nav-text">Format HDFS NameNode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8hadoop%E9%9B%86%E7%BE%A4"><span class="nav-number">13.</span> <span class="nav-text">启动Hadoop集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Cwordcount%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F"><span class="nav-number">14.</span> <span class="nav-text">运行WordCount示例程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E5%85%B3%E7%9A%84%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="nav-number">15.</span> <span class="nav-text">无关的碎碎念</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
