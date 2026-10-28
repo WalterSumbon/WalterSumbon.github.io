@@ -19,7 +19,7 @@ export async function signIn() {
   );
   const { error } = await c.auth.signInWithOAuth({
     provider: "github",
-    options: { redirectTo: location.origin + "/#/rankings" },
+    options: { redirectTo: location.origin + "/" },
   });
   if (error) throw error;
 }

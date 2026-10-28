@@ -10,7 +10,10 @@
     "coefficient": 1,
     "module": "flappy",
     "tags": ["反应", "单人"],
-    "cover": { "type": "html", "src": "/preview.html?game=G001" },
+    "cover": {
+      "type": "html",
+      "src": "/preview.html?game=G001"
+    },
     "rules": "每穿过一组障碍得 1 分。碰到障碍或地面结束。"
   },
   {
@@ -24,7 +27,10 @@
     "coefficient": 1,
     "module": "gomoku",
     "tags": ["策略", "棋类"],
-    "cover": { "type": "image", "src": "/assets/gomoku.svg" },
+    "cover": {
+      "type": "image",
+      "src": "/assets/gomoku.svg"
+    },
     "rules": "自由五子棋，无禁手，五子及以上连线获胜。胜局得 1000 减去你的落子次数，平局 100 分，败局 0 分。AI 使用攻防评估与两层搜索。"
   },
   {
@@ -38,7 +44,27 @@
     "coefficient": 1,
     "module": "watermelon",
     "tags": ["物理", "合成"],
-    "cover": { "type": "image", "src": "/assets/watermelon.svg" },
+    "cover": {
+      "type": "image",
+      "src": "/assets/watermelon.svg"
+    },
     "rules": "移动指针选择位置，点击投放；键盘左右移动、空格投放。相同水果碰撞后升级，得分为新水果等级的平方。成熟西瓜不再合并。水果静置并持续越过警戒线 2 秒则结束。"
+  },
+  {
+    "id": "G004",
+    "title": "方块危机",
+    "subtitle": "Boxhead: 2Play 玩法重制",
+    "description": "守住阵地，拾取红箱，用连杀解锁十种武器。单人或双人迎战尸潮。",
+    "version": "1.0.0",
+    "saveVersion": "1.0.0",
+    "scoreVersion": "1",
+    "coefficient": 1,
+    "module": "boxhead",
+    "tags": ["生存", "射击", "单人", "双人"],
+    "cover": {
+      "type": "image",
+      "src": "/assets/boxhead.svg"
+    },
+    "rules": "单人/双人合作按击杀分数累计，倍率由连杀提高并随时间衰减；最高分进入排行榜。双人对战先达 10 击杀获胜，不提交生存榜。红箱恢复生命与弹药。原作机制参考、地图及具体数值独立调校。"
   }
 ]

@@ -13,7 +13,7 @@
     "id": "arcade",
     "type": "games",
     "title": "休息一局",
-    "description": "三个可以随时开始的小实验。",
-    "items": ["G001", "G002", "G003"]
+    "description": "随时开始，随时回来继续。",
+    "items": ["G001", "G002", "G003", "G004"]
   }
 ]

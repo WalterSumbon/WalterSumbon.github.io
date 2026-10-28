@@ -1217,3 +1217,175 @@ dialog input {
 .account-avatar {
   border-radius: 50%;
 }
+
+.boxhead-shell {
+  width: 100%;
+  color: #26332d;
+  background: #e8e4d5;
+  border: 1px solid #b5b5a5;
+}
+.bh-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.bh-summary {
+  margin-right: auto;
+}
+.bh-arena {
+  position: relative;
+  outline: none;
+}
+.bh-arena canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  touch-action: none;
+}
+.bh-menu {
+  position: absolute;
+  inset: 0;
+  background: #ece8d9f5;
+  overflow: auto;
+  padding: clamp(12px, 3vw, 30px);
+  text-align: left;
+}
+.bh-menu h2 {
+  margin: 0 0 8px;
+}
+.bh-menu p {
+  font-size: 13px;
+  margin: 8px 0 16px;
+}
+.bh-menu label {
+  display: block;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.bh-menu select {
+  padding: 5px;
+  max-width: 70%;
+}
+.bh-menu input {
+  width: auto;
+}
+.bh-menu button {
+  margin: 8px 8px 0 0;
+}
+.bh-players {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+}
+.bh-player-panel {
+  flex: 1;
+  min-width: 0;
+}
+.bh-player-status {
+  font-size: 12px;
+  min-height: 32px;
+}
+.bh-weapon-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.bh-weapon-buttons button {
+  min-width: 35px;
+  min-height: 38px;
+  border: 1px solid #b9b7aa;
+  background: #f6f1e2;
+}
+.bh-weapon-buttons select {
+  min-width: 0;
+  max-width: 140px;
+  flex: 1;
+  padding: 8px 2px;
+  background: #f6f1e2;
+}
+.bh-help {
+  padding: 12px;
+  font-size: 12px;
+  border-top: 1px solid #b9b7aa;
+}
+.bh-help summary {
+  cursor: pointer;
+}
+.bh-help p {
+  margin: 12px 0;
+}
+.bh-touch {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.bh-stick {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #c5c5b8;
+  border: 1px solid #9caa9b;
+  touch-action: none;
+  user-select: none;
+  display: grid;
+  place-items: center;
+}
+.bh-stick i {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #53675788;
+  pointer-events: none;
+}
+.bh-stick span {
+  font-size: 11px;
+  color: #26332d;
+  z-index: 1;
+  pointer-events: none;
+}
+.boxhead-shell:fullscreen {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 0 12px;
+}
+.boxhead-shell:fullscreen .bh-arena {
+  width: min(100%, 102dvh);
+  margin: auto;
+}
+.boxhead-shell:fullscreen canvas {
+  height: auto;
+}
+@media (pointer: fine) {
+  .bh-touch {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .bh-players {
+    gap: 8px;
+    padding: 8px;
+  }
+  .bh-stick {
+    width: 72px;
+    height: 72px;
+  }
+  .bh-menu {
+    position: relative;
+  }
+  .bh-menu[hidden] {
+    display: none;
+  }
+  .bh-toolbar {
+    gap: 6px;
+  }
+  .bh-weapon-buttons select {
+    max-width: 92px;
+  }
+}

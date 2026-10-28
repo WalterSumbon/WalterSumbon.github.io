@@ -283,13 +283,19 @@ try {
     );
   }
   await initAccount(document.querySelector("#account"));
-  const loginError = new URLSearchParams(location.search).get("error_description");
+  const loginError =
+    new URLSearchParams(location.search).get("error_description") ||
+    new URLSearchParams(location.hash.slice(1)).get("error_description");
   if (loginError) {
     const notice = document.createElement("span");
     notice.role = "alert";
     notice.textContent = "登录未完成：" + loginError + "。请重新点击登录。";
     document.querySelector("#account").append(notice);
-    history.replaceState(null, "", "/" + (location.hash || "#/"));
+    history.replaceState(
+      null,
+      "",
+      "/" + (location.hash.startsWith("#/") ? location.hash : "#/"),
+    );
   }
   data = await loadContent();
   const legacy = new URLSearchParams(location.search).get("legacy");

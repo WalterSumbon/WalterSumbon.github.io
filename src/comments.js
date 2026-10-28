@@ -171,7 +171,7 @@ export async function mountComments(host, thread) {
   };
   const changed = () => refresh().catch(fail);
   window.addEventListener("account-change", changed);
-  await refresh().catch(fail);
+  refresh().catch(fail);
   return () => {
     disposed = true;
     generation++;
