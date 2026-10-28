@@ -1123,3 +1123,97 @@ dialog input {
     animation: none !important;
   }
 }
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.account-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.account [role="alert"] {
+  color: var(--accent);
+  max-width: 220px;
+}
+.page-votes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+}
+.comment-form {
+  margin: 24px 0;
+}
+.comment-form label {
+  display: block;
+  font-weight: 600;
+}
+.comment-form small {
+  color: var(--muted);
+  font-weight: 400;
+}
+.comment-form textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+}
+.comment {
+  border-top: 1px solid var(--line);
+  padding: 22px 0;
+  overflow-wrap: anywhere;
+}
+.comment header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.comment time {
+  color: var(--muted);
+}
+.comment footer {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.comment .prose {
+  font-size: 15px;
+}
+.comment .prose img {
+  max-width: 100%;
+}
+.comment [aria-pressed="true"],
+.page-votes [aria-pressed="true"] {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.comment-status {
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .account {
+    margin-left: auto;
+  }
+  .account-name {
+    max-width: 80px;
+  }
+  .page-votes {
+    flex-wrap: wrap;
+  }
+}
+
+.account-avatar {
+  border-radius: 50%;
+}

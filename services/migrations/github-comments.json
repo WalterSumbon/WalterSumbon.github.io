@@ -1,0 +1,112 @@
+[
+  {
+    "issue": 1,
+    "id": 777297258,
+    "body": "test\n*test*\n**test**\n~~test~~\n$ \\sum_{t=e}^{s} t $",
+    "author": "WalterSumbon",
+    "github_id": 45062253,
+    "created_at": "2021-02-11T09:09:31Z",
+    "updated_at": "2021-02-11T09:09:31Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/1#issuecomment-777297258"
+  },
+  {
+    "issue": 1,
+    "id": 778743339,
+    "body": "~~情人节~~ 相亲节快乐！ \nhiahiahia\n还是 utterances 比较香吧~",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-02-14T08:08:25Z",
+    "updated_at": "2021-02-14T08:08:25Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/1#issuecomment-778743339"
+  },
+  {
+    "issue": 1,
+    "id": 778771385,
+    "body": "好吧我也不知如何回复评论 QwQ",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-02-14T12:32:16Z",
+    "updated_at": "2021-02-14T12:32:16Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/1#issuecomment-778771385"
+  },
+  {
+    "issue": 1,
+    "id": 778771789,
+    "body": "> 好吧我也不知如何回复评论 QwQ\r\n\r\n似乎只能以这种方式回复。",
+    "author": "WalterSumbon",
+    "github_id": 45062253,
+    "created_at": "2021-02-14T12:35:48Z",
+    "updated_at": "2021-02-14T12:35:48Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/1#issuecomment-778771789"
+  },
+  {
+    "issue": 1,
+    "id": 778772342,
+    "body": "回复楼上：好吧，就是有点麻烦（",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-02-14T12:40:43Z",
+    "updated_at": "2021-02-14T12:40:43Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/1#issuecomment-778772342"
+  },
+  {
+    "issue": 2,
+    "id": 778789619,
+    "body": "看来无法正常渲染数学公式。",
+    "author": "WalterSumbon",
+    "github_id": 45062253,
+    "created_at": "2021-02-14T14:59:28Z",
+    "updated_at": "2021-02-14T14:59:28Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/2#issuecomment-778789619"
+  },
+  {
+    "issue": 2,
+    "id": 779224155,
+    "body": "我发现我的数学公式也出了点问题",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-02-15T13:28:08Z",
+    "updated_at": "2021-02-15T13:28:08Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/2#issuecomment-779224155"
+  },
+  {
+    "issue": 2,
+    "id": 798875045,
+    "body": "搬运博主的标准答案：\n老师来吃饭，随机抽取一个盘子。\n- 对于一个盘子来说，本次逃过一劫（不被选中）的概率是（1-1/N）\n- 老师来 n 次，这个盘子逃过 n 劫的概率就是 p = (1-1/N)^n \n- 那么盘子至少有一次遭殃的概率就是 (1- p)\n\n感谢博主 (^-^) ~",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-03-14T09:21:57Z",
+    "updated_at": "2021-03-14T09:21:57Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/2#issuecomment-798875045"
+  },
+  {
+    "issue": 3,
+    "id": 854346827,
+    "body": "给Kars点个赞！\n使用平台为ubuntu 19.10 eoan，Intel Core i5，x64架构下，通篇按照博客的做法安装hadoop，可以顺利运行。\n另外补充一下：ssh部分，即使ssh命令可用，也有可能忘装sshd! 所以乖乖地跟着流程走一遍最为保险。\nby 一个linux小白",
+    "author": "CSLiJT",
+    "github_id": 48442346,
+    "created_at": "2021-06-04T04:20:39Z",
+    "updated_at": "2021-06-04T04:20:39Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/3#issuecomment-854346827"
+  },
+  {
+    "issue": 3,
+    "id": 854371453,
+    "body": "如果在执行 `ssh localhost` 之后发现 connection refused，可以先用 `sudo service ssh status` 指令检查一下 sshd 是否打开。\n如果显示 sshd is not running，可以输入指令`sudo service ssh restart` 打开 sshd\n再次执行  `ssh localhost` ，大概率能成功连接啦",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-06-04T05:33:52Z",
+    "updated_at": "2021-06-04T05:33:52Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/3#issuecomment-854371453"
+  },
+  {
+    "issue": 3,
+    "id": 855182582,
+    "body": "## 记录一个 wordcount 执行 bug\n\n卡在 job running \n\n看了若干解决方案，最后只是因为自己磁盘剩余空间太少了。\n\n当磁盘的占用容量达到设定阈值时，就会盘拟定该节点坏了，此时任务将被无限搁置。\n\n解决方案：\n\n1. `df -lh` 指令检查当前磁盘容量使用情况：我是已经占用了 94%\n\n2. `sudo vim $HADOOP_HOME/etc/hadoop/yarn-site.xml`\n\n    修改 yarn-site.xml 文件，添加如下属性配置：\n\n    ``` xml\n    <property>\n        <name>yarn.nodemanager.disk-health-checker.max-disk-utilization-per-disk-percentage</name>\n        <value>97.0</value> // 根据（1）中磁盘使用情况设置阈值\n     </property>\n    ```\n\n   ",
+    "author": "karin0018",
+    "github_id": 45634982,
+    "created_at": "2021-06-05T04:43:32Z",
+    "updated_at": "2021-06-05T04:43:32Z",
+    "url": "https://github.com/WalterSumbon/WalterSumbon.github.io/issues/3#issuecomment-855182582"
+  }
+]

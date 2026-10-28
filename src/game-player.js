@@ -47,7 +47,7 @@ export async function mountPlayer(host, game) {
       const result = await submitScore(game, best);
       scoreStatus.textContent = {
         local: "全站榜尚未连接；成绩已保存在本机。",
-        login: "请先到排行榜页面使用 GitHub 登录，再提交成绩。",
+        login: "请使用页面顶部的 GitHub 登录，再提交成绩。",
         sent: "成绩已提交，全站榜保留你的最高分。",
       }[result.status];
     }

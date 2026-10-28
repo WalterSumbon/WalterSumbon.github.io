@@ -1,15 +1,15 @@
 import { loadContent, renderMarkdown, escapeHTML as esc } from "./content.js";
 import { config } from "./config.js";
 import {
-  comments,
   initAnalytics,
   track,
   visitorCount,
   getRanking,
   cloud,
   session,
-  signIn,
 } from "./services.js";
+import { mountComments } from "./comments.js";
+import { initAccount } from "./account.js";
 import { mountPlayer } from "./game-player.js";
 let data,
   cleanup,
@@ -63,11 +63,6 @@ async function post(id) {
   const groups = data.collections.filter(
     (c) => c.type === "posts" && c.items.includes(id),
   );
-  const oldIssues = {
-    Hadoop安装指南: 3,
-    戴森球计划中生产供应的计算: 1,
-    "《戴森球计划》串联分馏塔的氘生产速率": 2,
-  };
   main.innerHTML = `<div class="article-layout"><article class="article"><a class="back" href="#/blog">← 所有文章</a><header class="article-header"><div class="tags">${tags(p)}</div><h1>${esc(p.title)}</h1><p class="article-meta">${esc(p.author)} <span>·</span> 发布于 ${date(p.date)} <span>·</span> 更新于 ${date(p.updated || p.date)}</p><span class="muted small" id="visits"></span></header><div class="prose">${renderMarkdown(p.body)}</div><div class="article-end"><span>— 本文完 —</span><a href="/content/posts/${encodeURIComponent(p.file)}" download>下载 Markdown ↗</a></div>${groups
     .map((c) => {
       const i = c.items.indexOf(id);
@@ -92,10 +87,10 @@ async function post(id) {
     };
     toc.append(a);
   });
-  const term = p.legacyPath
-    ? encodeURI(p.legacyPath).replace(/^\//, "")
-    : "post:" + p.id;
-  comments(main.querySelector("#comments"), term, oldIssues[id]);
+  cleanup = await mountComments(
+    main.querySelector("#comments"),
+    "post:" + p.id,
+  );
   const path = "/post/" + id;
   track(path, p.title);
   const visits = main.querySelector("#visits");
@@ -131,8 +126,20 @@ async function game(id) {
   const g = data.games.find((x) => x.id === id);
   if (!g) throw new Error("没有找到这个游戏");
   main.innerHTML = `<section class="game-page-heading"><a class="back" href="#/games">← 游戏室</a><h1>${esc(g.title)}</h1><p>${esc(g.description)}</p></section><div id="player"><p class="loading">正在读取本机存档…</p></div><section class="comments-section"><h2>这一局，怎么样？</h2><div id="comments"></div></section>`;
-  comments(main.querySelector("#comments"), "game:" + id);
-  cleanup = await mountPlayer(main.querySelector("#player"), g);
+  const closeComments = await mountComments(
+    main.querySelector("#comments"),
+    "game:" + id,
+  );
+  try {
+    const closeGame = await mountPlayer(main.querySelector("#player"), g);
+    cleanup = async () => {
+      closeComments();
+      await closeGame();
+    };
+  } catch (e) {
+    closeComments();
+    throw e;
+  }
 }
 async function rankings(id) {
   main.innerHTML = `<section class="page-heading"><p class="eyebrow">记下你的最好一局</p><h1>排行榜</h1><p>总分 = 各游戏最高分 × 对应系数，再相加。${data.games.map((g) => esc(g.title) + " × " + g.coefficient).join("；")}。</p></section><nav class="rank-tabs"><a class="tag ${!id ? "selected" : ""}" href="#/rankings">总榜</a>${data.games.map((g) => `<a class="tag ${id === g.id ? "selected" : ""}" href="${url("rankings", g.id)}">${esc(g.title)}</a>`).join("")}</nav><div class="auth-area"></div><div class="rank-content"><p class="loading">正在读取排行榜…</p></div>`;
@@ -143,19 +150,7 @@ async function rankings(id) {
       '<div class="empty"><span class="eyebrow">尚未连接</span><h2>全站排行榜还没有启用</h2><p>游戏可以正常游玩，本机最高分会自动保存。连接排行榜后，使用 GitHub 登录即可提交。</p></div>';
     return;
   }
-  const s = await session();
-  auth.innerHTML = s
-    ? `<span>已登录：${esc(s.user.user_metadata.user_name || "GitHub 用户")}</span> <button class="quiet" id="signout">退出</button>`
-    : '<button class="secondary" id="signin">使用 GitHub 登录</button>';
-  auth.querySelector("#signin")?.addEventListener("click", () =>
-    signIn().catch((e) => {
-      area.textContent = e.message;
-    }),
-  );
-  auth.querySelector("#signout")?.addEventListener("click", async () => {
-    await cloud().auth.signOut();
-    await rankings(id);
-  });
+  auth.textContent = "使用顶部账号登录后，可在游戏页面提交成绩。";
   const ranks = await getRanking(id);
   area.innerHTML = ranks.length
     ? `<table class="rank-table"><thead><tr><th>名次</th><th>玩家</th><th>${id ? "最高分" : "总分"}</th></tr></thead><tbody>${ranks.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.username)}</td><td>${Number(r.score).toLocaleString("zh-CN")}</td></tr>`).join("")}</tbody></table>`
@@ -278,7 +273,24 @@ try {
     location.hash + location.search,
   );
   if (cloud()) await session();
-  if (authCallback) history.replaceState(null, "", "/#/rankings");
+  if (authCallback) {
+    const target = sessionStorage.getItem("login-return") || "#/rankings";
+    sessionStorage.removeItem("login-return");
+    history.replaceState(
+      null,
+      "",
+      "/" + (target.startsWith("#/") ? target : "#/"),
+    );
+  }
+  await initAccount(document.querySelector("#account"));
+  const loginError = new URLSearchParams(location.search).get("error_description");
+  if (loginError) {
+    const notice = document.createElement("span");
+    notice.role = "alert";
+    notice.textContent = "登录未完成：" + loginError + "。请重新点击登录。";
+    document.querySelector("#account").append(notice);
+    history.replaceState(null, "", "/" + (location.hash || "#/"));
+  }
   data = await loadContent();
   const legacy = new URLSearchParams(location.search).get("legacy");
   if (legacy) {

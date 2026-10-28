@@ -4,7 +4,9 @@ export const config = {
   author: "夏寒",
   github: "https://github.com/WalterSumbon",
   repo: "WalterSumbon/WalterSumbon.github.io",
-  giscus: { repoId: "MDEwOlJlcG9zaXRvcnkzMzE4NDY5Njk=", category: "Announcements", categoryId: "DIC_kwDOE8eVOc4DJ1-Z" },
   goatcounter: "waltersumbon",
-  supabase: { url: "https://etcpqxthiobgrkomyfae.supabase.co", publishableKey: "sb_publishable_GcXu6JXMUZfaPFDZhVOA_A_qTJuUMYb" },
+  supabase: {
+    url: "https://etcpqxthiobgrkomyfae.supabase.co",
+    publishableKey: "sb_publishable_GcXu6JXMUZfaPFDZhVOA_A_qTJuUMYb",
+  },
 };

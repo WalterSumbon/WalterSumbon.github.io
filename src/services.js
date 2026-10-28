@@ -13,6 +13,10 @@ export function cloud() {
 export async function signIn() {
   const c = cloud();
   if (!c) throw new Error("全站排行榜尚未连接");
+  sessionStorage.setItem(
+    "login-return",
+    location.hash.startsWith("#/") ? location.hash : "#/",
+  );
   const { error } = await c.auth.signInWithOAuth({
     provider: "github",
     options: { redirectTo: location.origin + "/#/rankings" },
@@ -47,46 +51,6 @@ export async function getRanking(id) {
   });
   if (error) throw error;
   return data;
-}
-export function comments(container, key, legacy) {
-  container.replaceChildren();
-  if (!config.giscus.repoId || !config.giscus.categoryId) {
-    const p = document.createElement("p");
-    p.className = "muted";
-    p.textContent =
-      "评论尚未连接。配置 Giscus 后，可使用 GitHub 登录、回复和添加反应。";
-    container.append(p);
-    if (legacy) {
-      const a = document.createElement("a");
-      a.href = `https://github.com/${config.repo}/issues/${legacy}`;
-      a.textContent = "查看旧文章评论 ↗";
-      a.target = "_blank";
-      a.rel = "noopener";
-      container.append(a);
-    }
-    return;
-  }
-  const script = document.createElement("script");
-  script.src = "https://giscus.app/client.js";
-  for (const [k, v] of Object.entries({
-    repo: config.repo,
-    "repo-id": config.giscus.repoId,
-    category: config.giscus.category,
-    "category-id": config.giscus.categoryId,
-    mapping: "specific",
-    term: key,
-    strict: "1",
-    "reactions-enabled": "1",
-    "emit-metadata": "0",
-    "input-position": "top",
-    theme: "light",
-    lang: "zh-CN",
-    loading: "lazy",
-  }))
-    script.setAttribute("data-" + k, v);
-  script.crossOrigin = "anonymous";
-  script.async = true;
-  container.append(script);
 }
 export function track(path, title, event = false) {
   if (

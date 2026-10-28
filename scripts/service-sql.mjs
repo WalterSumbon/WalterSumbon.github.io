@@ -15,3 +15,11 @@ for (const g of games) {
     `insert into public.game_rules (id,score_version,coefficient) values (${quote(g.id)},${quote(g.scoreVersion)},${g.coefficient}) on conflict (id) do update set score_version=excluded.score_version, coefficient=excluded.coefficient;`,
   );
 }
+
+if (!process.argv.includes("--rules-only"))
+  console.log(
+    await readFile(
+      new URL("../services/migrations/002-comments.sql", import.meta.url),
+      "utf8",
+    ),
+  );
