@@ -18,15 +18,15 @@
       height: 100%;
       display: block;
     }
-    .plane {
+    .bird {
       transform-origin: 180px 132px;
       transition: transform 0.25s ease;
     }
-    body:hover .plane {
+    body:hover .bird {
       transform: translateY(-14px) rotate(-5deg);
     }
     @media (prefers-reduced-motion: reduce) {
-      .plane {
+      .bird {
         transition: none;
       }
     }
@@ -51,14 +51,17 @@
         stroke="#879b84"
         stroke-dasharray="3 7"
       />
-      <g class="plane">
-        <path
-          d="M144 115L214 131L155 154L164 132Z"
-          fill="#b65a37"
-          stroke="#6b382a"
-          stroke-width="1.5"
-        />
-        <path d="M144 115L164 132L214 131" fill="none" stroke="#f5d5a7" />
+      <g class="bird">
+        <g transform="translate(180 132) scale(2)">
+          <path
+            d="M-16 0Q-14 -13 -2 -13Q10 -13 12 -3L20 1L11 5Q3 15 -9 10Z"
+            fill="#b65a37"
+            stroke="#6b382a"
+            stroke-width="1.5"
+          />
+          <path d="M-12 -2L3 1L-9 8Z" fill="#f5d5a7" />
+          <circle cx="6" cy="-7" r="2" fill="#29332e" />
+        </g>
       </g>
       <text
         x="24"
