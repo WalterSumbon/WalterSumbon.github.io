@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>纸翼预览</title
+  ><style>
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #eaf0e6;
+      cursor: pointer;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .plane {
+      transform-origin: 180px 132px;
+      transition: transform 0.25s ease;
+    }
+    body:hover .plane {
+      transform: translateY(-14px) rotate(-5deg);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .plane {
+        transition: none;
+      }
+    }
+  </style>
+  <body>
+    <svg viewBox="0 0 480 290" role="img" aria-label="纸翼穿过障碍">
+      <defs>
+        <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+          <path d="M24 0H0V24" fill="none" stroke="#d5dfd1" stroke-width=".6" />
+        </pattern>
+      </defs>
+      <rect width="480" height="290" fill="url(#grid)" />
+      <path
+        d="M326 0H376V80H326ZM326 215H376V290H326Z"
+        fill="#849982"
+        stroke="#536f56"
+        stroke-width="1.5"
+      />
+      <path
+        d="M90 154Q139 105 180 132"
+        fill="none"
+        stroke="#879b84"
+        stroke-dasharray="3 7"
+      />
+      <g class="plane">
+        <path
+          d="M144 115L214 131L155 154L164 132Z"
+          fill="#b65a37"
+          stroke="#6b382a"
+          stroke-width="1.5"
+        />
+        <path d="M144 115L164 132L214 131" fill="none" stroke="#f5d5a7" />
+      </g>
+      <text
+        x="24"
+        y="264"
+        font-family="monospace"
+        font-size="11"
+        letter-spacing="2"
+        fill="#60765e"
+      >
+        01 / PAPER FLIGHT
+      </text>
+    </svg>
+    <script>
+      document.body.onclick = () =>
+        parent.postMessage({ type: "open-game", id: "G001" }, location.origin);
+    </script>
+  </body>
+</html>

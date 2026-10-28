@@ -1,0 +1,44 @@
+[
+  {
+    "id": "G001",
+    "title": "纸翼",
+    "subtitle": "Flappy Bird",
+    "description": "点击或按空格振翅，穿过一道道窄门。",
+    "version": "1.0.0",
+    "saveVersion": "1.0.0",
+    "scoreVersion": "1",
+    "coefficient": 1,
+    "module": "flappy",
+    "tags": ["反应", "单人"],
+    "cover": { "type": "html", "src": "/preview.html?game=G001" },
+    "rules": "每穿过一组障碍得 1 分。碰到障碍或地面结束。"
+  },
+  {
+    "id": "G002",
+    "title": "五子棋",
+    "subtitle": "与 AI 对弈",
+    "description": "执黑先行。在十五路棋盘上，先连成五子。",
+    "version": "1.0.0",
+    "saveVersion": "1.0.0",
+    "scoreVersion": "1",
+    "coefficient": 1,
+    "module": "gomoku",
+    "tags": ["策略", "棋类"],
+    "cover": { "type": "image", "src": "/assets/gomoku.svg" },
+    "rules": "自由五子棋，无禁手，五子及以上连线获胜。胜局得 1000 减去你的落子次数，平局 100 分，败局 0 分。AI 使用攻防评估与两层搜索。"
+  },
+  {
+    "id": "G003",
+    "title": "合成大西瓜",
+    "subtitle": "一点点，长大",
+    "description": "落下一颗水果，让相同的果实相遇。",
+    "version": "1.0.0",
+    "saveVersion": "1.0.0",
+    "scoreVersion": "1",
+    "coefficient": 1,
+    "module": "watermelon",
+    "tags": ["物理", "合成"],
+    "cover": { "type": "image", "src": "/assets/watermelon.svg" },
+    "rules": "移动指针选择位置，点击投放；键盘左右移动、空格投放。相同水果碰撞后升级，得分为新水果等级的平方。成熟西瓜不再合并。水果静置并持续越过警戒线 2 秒则结束。"
+  }
+]
