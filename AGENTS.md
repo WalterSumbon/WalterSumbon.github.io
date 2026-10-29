@@ -41,3 +41,5 @@
 - GoatCounter 对尚无记录的路径返回 HTTP 404 且 JSON count 为字符串 0，应按正常零计数展示；其他 HTTP 或网络错误仍明确报错。读取公开计数不依赖上报脚本加载成功。tests/analytics.test.mjs 覆盖这一区分。
 
 - G003 视觉采用用户参考的薄荷绿背景、奶油黄格纹、圆润笑脸水果。绘图唯一来源 src/games/watermelon-art.js；node scripts/watermelon-cover.mjs 生成同风格 SVG 封面。仅调整视觉，物理半径、计分和存档结构保持原有已确认版本。
+
+- 网站标签页图标采用用户提供的 GitHub 像素头像，原图保存为 assets/avatar-icon.png；不再采用此前兔子或蝎子设计草稿。
