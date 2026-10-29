@@ -32,7 +32,7 @@
 
 - 2026-10-29：Supabase CLI 2.122.0 已登录；CLI 临时数据库角色创建报权限错误，使用官方 Management API 完成初始化及 Auth 配置。公开 publishable key 已写入 src/config.js；私密密钥不入库。tests/supabase.sql 在远程事务内验证保留最高分、总榜系数计算、表写权限，并回滚全部测试数据，执行通过。
 - 评论结构迁移 services/migrations/002-comments.sql；旧评论快照 services/migrations/github-comments.json；node scripts/import-comments.mjs 输出按 source_url 去重的导入 SQL。tests/comments.sql 已在远程回滚事务内验证回复、编辑、软删除、赞踩切换及权限。数据库函数是唯一写入口。
-- 用户新增 G004：参考 Boxhead: 2Play 重写，初始 gameVersion/saveVersion 均为 1.0.0、scoreVersion 为 1、总榜系数为 1；需要单人、双人合作和双人对战及手机触控。已实现单人、双人同屏合作和双人同屏对战，PC 同键盘、手机双控制区触屏；跨设备联机尚未实现，等待用户明确需要。未核实的原版数值不得声称完全还原。
+- 用户新增 G004：参考 Boxhead: 2Play 重写，初始 gameVersion/saveVersion 均为 1.0.0、scoreVersion 为 1、总榜系数为 1；需要单人、双人合作和双人对战及手机触控。已实现单人、双人同屏合作和双人同屏对战，PC 同键盘、手机双控制区触屏；用户已确认多人采用同设备双人：PC 同键盘，手机/平板同屏触控；当前需求不包含跨设备联机。未核实的原版数值不得声称完全还原。
 
 - G004 使用独立 Canvas 实现，18 张重绘地图、10 种武器、红箱、波次、连杀升级、恶魔硬直和爆炸自伤；地图布局和数值为本版调校，不能声称原版逐项精确复刻。对战先到 10 击杀，不提交生存榜。模拟状态为单写者，固定步长更新；界面只读并提交输入。
 - G004 已验证单人、键盘双人、双人存档刷新恢复及 390px 触屏摇杆；规则测试覆盖三模式、18 地图出生点、连杀、弹药、红箱、爆炸、恶魔、结束条件、确定性。
