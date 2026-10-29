@@ -83,10 +83,14 @@ export function initAnalytics() {
 }
 export async function visitorCount(path) {
   if (!config.goatcounter) return null;
-  await analyticsReady;
   const r = await fetch(
     `https://${config.goatcounter}.goatcounter.com/counter/${encodeURIComponent(path)}.json`,
   );
+  // GoatCounter 对尚无记录的路径返回 404 和零计数，属于正常空状态。
+  if (r.status === 404) {
+    const data = await r.json();
+    if (data.count === "0") return data.count;
+  }
   if (!r.ok) throw new Error(`统计服务返回 HTTP ${r.status}`);
   return (await r.json()).count;
 }
