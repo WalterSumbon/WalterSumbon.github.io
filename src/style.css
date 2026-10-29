@@ -1389,3 +1389,54 @@ dialog input {
     max-width: 92px;
   }
 }
+
+/* 果篮配色和控件仅用于合成大西瓜。 */
+.orchard {
+  border-radius: 20px;
+  overflow: hidden;
+  background: #c5dec0;
+}
+.orchard > svg {
+  display: block;
+}
+.orchard .game-overlay {
+  background: #c5dec079;
+  backdrop-filter: blur(3px);
+}
+.orchard-welcome {
+  width: min(100%, 280px);
+  padding: 24px 18px;
+  border: 3px solid #f6f5dd;
+  border-radius: 32px;
+  background: #fff8e9;
+  box-shadow: 0 8px 0 #93b68d40;
+}
+.orchard-welcome > svg {
+  width: 84px;
+  display: block;
+  margin: 0 auto;
+}
+.orchard-welcome p {
+  color: #52664d;
+  margin: 12px 0 20px;
+  font-weight: 700;
+}
+.orchard-welcome .start {
+  border-radius: 22px;
+  background: #a75c73;
+  border: 0;
+  min-height: 44px;
+  padding: 10px 30px;
+  color: #fffaf1;
+  box-shadow: 0 4px 0 #88485d;
+}
+.orchard-welcome .start:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #88485d;
+}
+.orchard-welcome small {
+  display: block;
+  margin-top: 20px;
+  color: #71806a;
+  line-height: 1.8;
+}

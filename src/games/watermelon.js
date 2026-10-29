@@ -1,9 +1,5 @@
-import {
-  RADII,
-  COLORS,
-  mergeScore,
-  validateState,
-} from "./watermelon-logic.js";
+import { fruitDefs, fruitUse, FRUIT_NAMES, gingham } from "./watermelon-art.js";
+import { RADII, mergeScore, validateState } from "./watermelon-logic.js";
 export const validate = validateState;
 export function mount(host, hooks, saved) {
   if (saved) validate(saved);
@@ -22,7 +18,7 @@ export function mount(host, hooks, saved) {
     aim = 210,
     danger = 0,
     merges = [];
-  host.innerHTML = `<div class="playfield orchard" tabindex="0" role="application" aria-label="合成大西瓜：左右移动，空格投放"><svg viewBox="0 0 420 580" aria-hidden="true"><rect width="420" height="580" fill="#faf2df"/><path d="M12 95V566H408V95" fill="none" stroke="#a39677" stroke-width="3"/><path d="M14 95H406" stroke="#b76b52" stroke-dasharray="5 6"/><text x="24" y="35" fill="#766951" font-size="13">下一个</text><circle id="next-fruit" cx="85" cy="30" r="12"/><text id="fruit-score" x="393" y="38" text-anchor="end" font-size="26" fill="#514d3c" font-family="monospace">0</text><g id="aim-fruit"></g><g id="fruits"></g></svg><div class="game-overlay"><p>从一颗小果子开始</p><button class="primary start">${saved && !over ? "继续合成" : "开始合成"}</button><small>移动选位置，点击投放</small></div></div>`;
+  host.innerHTML = `<div class="playfield orchard" tabindex="0" role="application" aria-label="合成大西瓜：左右移动，空格投放"><svg viewBox="0 -80 420 720" aria-hidden="true"><defs>${fruitDefs()}${gingham}</defs><rect x="0" y="-80" width="420" height="720" rx="20" fill="#c5dec0"/><rect x="20" y="-59" width="148" height="70" rx="18" fill="#4f6651"/><text x="94" y="-36" text-anchor="middle" fill="#e0edcc" font-size="12" font-weight="600">这一篮的得分</text><text id="fruit-score" x="94" y="-6" text-anchor="middle" font-size="28" font-weight="750" fill="#fff8e5" font-family="ui-rounded,system-ui,sans-serif">0</text><rect x="242" y="-58" width="158" height="68" rx="34" fill="#e1ecd0" stroke="#b0cda6" stroke-width="3"/><text x="265" y="-19" fill="#526e50" font-size="12">待投放</text><g id="next-fruit" transform="translate(363 -24)"></g><rect x="12" y="95" width="396" height="471" fill="url(#orchard-gingham)"/><path d="M12 91V566H408V91" fill="none" stroke="#c87c58" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 95H393" stroke="#de916d" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 12"/><g id="aim-fruit"></g><g id="fruits"></g><rect x="13" y="584" width="394" height="42" rx="21" fill="#e1ecd0" stroke="#b0cda6" stroke-width="2"/>${FRUIT_NAMES.map((_, i) => fruitUse(i, 12 + i * 0.35, 32 + i * 35.5, 605)).join("")}</svg><div class="game-overlay"><div class="orchard-welcome"><svg viewBox="-54 -54 108 108" aria-hidden="true">${fruitUse(10, 50)}</svg><p>装满一篮小快乐</p><button class="primary start">${saved && !over ? "继续合成" : "开始合成"}</button><small>移动选位置，点击投放<br>让一样的小果子碰个面</small></div></div></div>`;
   const field = host.querySelector(".playfield"),
     overlay = host.querySelector(".game-overlay"),
     layer = host.querySelector("#fruits");
@@ -45,7 +41,7 @@ export function mount(host, hooks, saved) {
       born: clock - (v.age || 0),
       node: document.createElementNS("http://www.w3.org/2000/svg", "g"),
     };
-    fruit.node.innerHTML = `<circle r="${RADII[level]}" fill="${COLORS[level]}" stroke="#6d694d" stroke-width="1"/><path d="M-3 ${-RADII[level] + 3}q-1 -9 8 -7" fill="none" stroke="#48654c" stroke-width="2"/><ellipse cx="${-RADII[level] * 0.3}" cy="${-RADII[level] * 0.3}" rx="${RADII[level] * 0.23}" ry="${RADII[level] * 0.16}" fill="#fff" opacity=".23"/>${level >= 9 ? '<path d="M-12 -78Q-44 0 -12 78M12 -78Q44 0 12 78" fill="none" stroke="#cee0a0" stroke-width="7" opacity=".45"/>' : ""}`;
+    fruit.node.innerHTML = fruitUse(level, RADII[level]);
     layer.append(fruit.node);
     fruits.push(fruit);
     Composite.add(engine.world, body);
@@ -101,9 +97,9 @@ export function mount(host, hooks, saved) {
         `translate(${f.body.position.x} ${f.body.position.y}) rotate(${(f.body.angle * 180) / Math.PI})`,
       );
     host.querySelector("#fruit-score").textContent = score;
-    host.querySelector("#next-fruit").setAttribute("fill", COLORS[next]);
+    host.querySelector("#next-fruit").innerHTML = fruitUse(next, 22);
     host.querySelector("#aim-fruit").innerHTML =
-      `<path d="M${aim} 60V540" stroke="#a99a7d" opacity=".2" stroke-dasharray="3 6"/><circle cx="${aim}" cy="68" r="${RADII[next]}" fill="${COLORS[next]}" opacity=".65"/>`;
+      `<path d="M${aim} 100V546" stroke="#df926f" opacity=".65" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 12"/>${fruitUse(next, RADII[next], aim, 68)}`;
   }
   function tick(now) {
     if (!running) return;

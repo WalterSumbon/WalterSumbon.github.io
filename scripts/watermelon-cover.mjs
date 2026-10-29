@@ -1,0 +1,5 @@
+import { writeFile } from "node:fs/promises";
+import { fruitDefs, fruitUse, gingham } from "../src/games/watermelon-art.js";
+// 封面与游戏共用水果绘图，避免维护两套角色。
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 290"><defs>${fruitDefs()}${gingham}</defs><rect width="480" height="290" fill="#c5dec0"/><rect x="54" y="54" width="372" height="209" rx="12" fill="url(#orchard-gingham)"/><path d="M54 53V263H426V53" fill="none" stroke="#c87c58" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/><path d="M69 68H410" stroke="#de916d" stroke-width="3" stroke-dasharray="10 10" stroke-linecap="round"/>${fruitUse(10, 83, 305, 182)}${fruitUse(6, 47, 174, 216)}${fruitUse(3, 32, 115, 231)}${fruitUse(2, 26, 159, 147)}${fruitUse(1, 20, 203, 158)}${fruitUse(0, 15, 126, 184)}${fruitUse(3, 24, 195, 59)}<path d="M195 91v35" stroke="#de916d" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 9"/><text x="30" y="29" fill="#526e50" font-family="system-ui,sans-serif" font-size="12" font-weight="650" letter-spacing="2">一颗一颗，合成小快乐。</text></svg>`;
+await writeFile(new URL("../assets/watermelon.svg", import.meta.url), svg);
