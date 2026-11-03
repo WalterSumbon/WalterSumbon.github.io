@@ -83,10 +83,11 @@ function candidates(board) {
   return [...result];
 }
 /** 优先取胜、封堵，再对候选位置进行两层攻防搜索。 */
-export function chooseMove(board) {
+export function chooseMove(board, ai = 2) {
+  const human = ai === 1 ? 2 : 1;
   const moves = candidates(board);
   if (!moves.length) return -1;
-  for (const who of [2, 1]) {
+  for (const who of [ai, human]) {
     for (const i of moves) {
       board[i] = who;
       const won = winner(board, i);
@@ -97,17 +98,17 @@ export function chooseMove(board) {
   const ranked = moves
     .map((i) => ({
       i,
-      score: evaluate(board, i, 2) + evaluate(board, i, 1) * 1.1,
+      score: evaluate(board, i, ai) + evaluate(board, i, human) * 1.1,
     }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 12);
   let best = -Infinity,
     choice = ranked[0].i;
   for (const { i, score } of ranked) {
-    board[i] = 2;
+    board[i] = ai;
     let danger = 0;
     for (const j of candidates(board))
-      danger = Math.max(danger, evaluate(board, j, 1));
+      danger = Math.max(danger, evaluate(board, j, human));
     board[i] = 0;
     const value = score - danger * 0.8;
     if (value > best) {
@@ -124,7 +125,8 @@ export function validateBoard(state) {
     state.board.length !== 225 ||
     state.board.some((x) => ![0, 1, 2].includes(x)) ||
     ![1, 2].includes(state.turn) ||
-    typeof state.over !== "boolean"
+    typeof state.over !== "boolean" ||
+    (state.player !== undefined && ![1, 2].includes(state.player))
   )
     throw new Error("五子棋存档格式不正确");
   const black = state.board.filter((x) => x === 1).length,
@@ -132,9 +134,9 @@ export function validateBoard(state) {
   if (black < white || black > white + 1)
     throw new Error("五子棋存档棋子数量不合法");
 }
-export function gameScore(board, who) {
-  return who === 1
-    ? 1000 - board.filter((x) => x === 1).length
+export function gameScore(board, who, player = 1) {
+  return who === player
+    ? 1000 - board.filter((x) => x === player).length
     : who === 0
       ? 100
       : 0;

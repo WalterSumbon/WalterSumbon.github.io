@@ -20,7 +20,7 @@
     "id": "G002",
     "title": "五子棋",
     "subtitle": "与 AI 对弈",
-    "description": "执黑先行。在十五路棋盘上，先连成五子。",
+    "description": "可选执黑或执白，黑棋先行，先连成五子获胜。",
     "version": "1.0.0",
     "saveVersion": "1.0.0",
     "scoreVersion": "1",
@@ -36,7 +36,7 @@
   {
     "id": "G003",
     "title": "合成大西瓜",
-    "subtitle": "一点点，长大",
+    "subtitle": "水果合成",
     "description": "落下一颗水果，让相同的果实相遇。",
     "version": "1.0.0",
     "saveVersion": "1.0.0",

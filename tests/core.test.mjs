@@ -112,3 +112,20 @@ test("西瓜合并计分与存档字段校验", () => {
     validateState({ score: 0, next: 0, over: false, fruits: [{ level: 20 }] }),
   );
 });
+
+test("五子棋支持 AI 执黑，按玩家颜色计分并兼容旧存档", () => {
+  const board = Array(225).fill(0);
+  assert.equal(chooseMove(board, 1), 112);
+  for (let i = 0; i < 4; i++) board[30 + i] = 1;
+  assert.equal(chooseMove(board, 1), 34);
+  board.fill(0);
+  for (let i = 0; i < 4; i++) board[30 + i] = 2;
+  assert.equal(chooseMove(board, 1), 34);
+  board[34] = 2;
+  assert.equal(gameScore(board, 2, 2), 995);
+  assert.equal(gameScore(board, 1, 2), 0);
+  const state = { board: Array(225).fill(0), turn: 1, over: false };
+  assert.doesNotThrow(() => validateBoard(state));
+  assert.doesNotThrow(() => validateBoard({ ...state, player: 2 }));
+  assert.throws(() => validateBoard({ ...state, player: 3 }));
+});

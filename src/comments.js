@@ -1,3 +1,4 @@
+import { confirmAction } from "./dialog.js";
 import { cloud, session, signIn } from "./services.js";
 import { escapeHTML as esc, renderMarkdown } from "./content.js";
 /** 评论的读取、编辑和投票均调用受权限约束的数据库函数。 */
@@ -125,7 +126,7 @@ export async function mountComments(host, thread) {
     host.querySelectorAll("[data-delete]").forEach(
       (button) =>
         (button.onclick = async () => {
-          if (!confirm("删除这条评论？回复仍会保留。")) return;
+          if (!(await confirmAction("删除这条评论？回复仍会保留。"))) return;
           button.disabled = true;
           try {
             await rpc("write_comment", {

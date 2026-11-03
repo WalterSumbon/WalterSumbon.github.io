@@ -18,7 +18,7 @@ export function mount(host, hooks, saved) {
     aim = 210,
     danger = 0,
     merges = [];
-  host.innerHTML = `<div class="playfield orchard" tabindex="0" role="application" aria-label="合成大西瓜：左右移动，空格投放"><svg viewBox="0 -80 420 720" aria-hidden="true"><defs>${fruitDefs()}${gingham}</defs><rect x="0" y="-80" width="420" height="720" rx="20" fill="#c5dec0"/><rect x="20" y="-59" width="148" height="70" rx="18" fill="#4f6651"/><text x="94" y="-36" text-anchor="middle" fill="#e0edcc" font-size="12" font-weight="600">这一篮的得分</text><text id="fruit-score" x="94" y="-6" text-anchor="middle" font-size="28" font-weight="750" fill="#fff8e5" font-family="ui-rounded,system-ui,sans-serif">0</text><rect x="242" y="-58" width="158" height="68" rx="34" fill="#e1ecd0" stroke="#b0cda6" stroke-width="3"/><text x="265" y="-19" fill="#526e50" font-size="12">待投放</text><g id="next-fruit" transform="translate(363 -24)"></g><rect x="12" y="95" width="396" height="471" fill="url(#orchard-gingham)"/><path d="M12 91V566H408V91" fill="none" stroke="#c87c58" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 95H393" stroke="#de916d" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 12"/><g id="aim-fruit"></g><g id="fruits"></g><rect x="13" y="584" width="394" height="42" rx="21" fill="#e1ecd0" stroke="#b0cda6" stroke-width="2"/>${FRUIT_NAMES.map((_, i) => fruitUse(i, 12 + i * 0.35, 32 + i * 35.5, 605)).join("")}</svg><div class="game-overlay"><div class="orchard-welcome"><svg viewBox="-54 -54 108 108" aria-hidden="true">${fruitUse(10, 50)}</svg><p>装满一篮小快乐</p><button class="primary start">${saved && !over ? "继续合成" : "开始合成"}</button><small>移动选位置，点击投放<br>让一样的小果子碰个面</small></div></div></div>`;
+  host.innerHTML = `<div class="playfield orchard" tabindex="0" role="application" aria-label="合成大西瓜：左右移动，空格投放"><svg viewBox="0 -80 420 720" aria-hidden="true"><defs>${fruitDefs()}${gingham}</defs><rect x="0" y="-80" width="420" height="720" rx="20" fill="#c5dec0"/><rect x="20" y="-59" width="148" height="70" rx="18" fill="#4f6651"/><text x="94" y="-36" text-anchor="middle" fill="#e0edcc" font-size="12" font-weight="600">这一篮的得分</text><text id="fruit-score" x="94" y="-6" text-anchor="middle" font-size="28" font-weight="750" fill="#fff8e5" font-family="ui-rounded,system-ui,sans-serif">0</text><rect x="242" y="-58" width="158" height="68" rx="34" fill="#e1ecd0" stroke="#b0cda6" stroke-width="3"/><text x="265" y="-19" fill="#526e50" font-size="12">待投放</text><g id="next-fruit" transform="translate(363 -24)"></g><rect x="12" y="95" width="396" height="471" fill="url(#orchard-gingham)"/><path d="M12 91V566H408V91" fill="none" stroke="#c87c58" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 95H393" stroke="#de916d" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 12"/><g id="aim-fruit"></g><g id="fruits"></g><rect x="13" y="584" width="394" height="42" rx="21" fill="#e1ecd0" stroke="#b0cda6" stroke-width="2"/>${FRUIT_NAMES.map((_, i) => fruitUse(i, 12 + i * 0.35, 32 + i * 35.5, 605)).join("")}</svg><div class="game-overlay"><div class="orchard-welcome"><svg viewBox="-54 -54 108 108" aria-hidden="true">${fruitUse(10, 50)}</svg><p>合成大西瓜</p><button class="primary start">${saved && !over ? "继续合成" : "开始合成"}</button><small>移动选位置，点击投放<br>相同水果碰撞后合并</small></div></div></div>`;
   const field = host.querySelector(".playfield"),
     overlay = host.querySelector(".game-overlay"),
     layer = host.querySelector("#fruits");
@@ -41,7 +41,7 @@ export function mount(host, hooks, saved) {
       born: clock - (v.age || 0),
       node: document.createElementNS("http://www.w3.org/2000/svg", "g"),
     };
-    fruit.node.innerHTML = fruitUse(level, RADII[level]);
+    fruit.node.innerHTML = `<g>${fruitUse(level, RADII[level])}</g>`;
     layer.append(fruit.node);
     fruits.push(fruit);
     Composite.add(engine.world, body);
@@ -72,7 +72,8 @@ export function mount(host, hooks, saved) {
         f.node.remove();
         fruits.splice(fruits.indexOf(f), 1);
       }
-      add(level, x, y);
+      const merged = add(level, x, y);
+      merged.node.firstElementChild.classList.add("merge-pop");
       score += mergeScore(level);
       hooks.onScore(score);
     }

@@ -1,3 +1,4 @@
+import { confirmAction } from "../dialog.js";
 import {
   initialState,
   step,
@@ -20,7 +21,7 @@ export function mount(host, hooks, saved) {
   const keys = new Set(),
     touch = [{}, {}],
     mouse = { active: false, angle: 0 };
-  host.innerHTML = `<div class="boxhead-shell"><div class="bh-toolbar"><b>方块危机</b><span class="bh-summary"></span><button class="quiet bh-pause">暂停</button><button class="quiet bh-full">全屏</button></div><div class="bh-arena" tabindex="0" role="application" aria-label="方块危机战场"><canvas width="960" height="640" aria-label="游戏画面"></canvas><div class="bh-menu"><h2>守住这一间。</h2><p>连杀解锁武器，红箱补充弹药。远离爆炸。</p><label>模式 <select class="bh-mode"><option value="single">单人</option><option value="coop">双人合作</option><option value="versus">双人对战 · 先到 10 击杀</option></select></label><label>地图 <select class="bh-map">${MAPS.map((m) => `<option value="${m.id}">${m.name}</option>`).join("")}</select></label><label>难度 <select class="bh-difficulty"><option value="easy">轻松</option><option value="normal" selected>标准</option><option value="hard">困难</option></select></label><label><input class="bh-devils" type="checkbox" checked> 恶魔</label><label><input class="bh-friendly" type="checkbox"> 合作模式子弹友伤（爆炸始终有伤害）</label><div><button class="primary bh-new">开始新局</button><button class="secondary bh-resume" ${saved && !s.over ? "" : "hidden"}>继续存档</button></div><p class="bh-menu-note"></p></div></div><div class="bh-players"></div><details class="bh-help"><summary>操作、武器与升级</summary><p>单人：方向键 / WASD 移动，空格射击；鼠标按住可瞄准射击。1–9 / 0 选武器，Q / E 切换，R 引爆遥控炸药，P 暂停。双人：P1 方向键、/ 射击、逗号句号换枪、Enter 引爆；P2 WASD、空格射击、Q/E 换枪、R 引爆。</p><p>触屏：左摇杆移动，右摇杆瞄准并射击。双人时每位玩家有各自控制区。合作阵亡玩家在下一波复活；全员阵亡结束。对战先达到 10 击杀获胜。对战分数不提交生存榜。</p><p>连杀倍率随时间下降，达到过的升级永久保留到本局结束。油桶可阻挡并连锁爆炸；路障可被拆毁；地雷自动触发；遥控炸药由“引爆”按钮触发；轨道炮贯穿敌人。</p><p>独立玩法重制，参考 <a href="https://armorgames.com/play/158/boxhead-2play" target="_blank" rel="noopener">Boxhead: 2Play</a>。18 张重绘地图及伤害、升级阈值为本版调校。</p><ol>${WEAPONS.map((w) => `<li>${w.name}：连杀达到 ${w.unlock} 解锁</li>`).join("")}</ol><details><summary>完整升级表</summary><ul>${UPGRADES.map(([at, , , , name]) => `<li>×${at} ${name}</li>`).join("")}</ul></details></details></div>`;
+  host.innerHTML = `<div class="boxhead-shell"><div class="bh-toolbar"><b>方块危机</b><span class="bh-summary"></span><button class="quiet bh-pause">暂停</button><button class="quiet bh-full">全屏</button></div><div class="bh-arena" tabindex="0" role="application" aria-label="方块危机战场"><canvas width="960" height="640" aria-label="游戏画面"></canvas><div class="bh-menu"><h2>方块危机</h2><p>连杀解锁武器，红箱补充弹药。远离爆炸。</p><label>模式 <select class="bh-mode"><option value="single">单人</option><option value="coop">双人合作</option><option value="versus">双人对战 · 先到 10 击杀</option></select></label><label>地图 <select class="bh-map">${MAPS.map((m) => `<option value="${m.id}">${m.name}</option>`).join("")}</select></label><label>难度 <select class="bh-difficulty"><option value="easy">轻松</option><option value="normal" selected>标准</option><option value="hard">困难</option></select></label><label><input class="bh-devils" type="checkbox" checked> 恶魔</label><label><input class="bh-friendly" type="checkbox"> 合作模式子弹友伤（爆炸始终有伤害）</label><div><button class="primary bh-new">开始新局</button><button class="secondary bh-resume" ${saved && !s.over ? "" : "hidden"}>继续存档</button></div><p class="bh-menu-note"></p></div></div><div class="bh-players"></div><details class="bh-help"><summary>操作、武器与升级</summary><p>单人：方向键 / WASD 移动，空格射击；鼠标按住可瞄准射击。1–9 / 0 选武器，Q / E 切换，R 引爆遥控炸药，P 暂停。双人：P1 方向键、/ 射击、逗号句号换枪、Enter 引爆；P2 WASD、空格射击、Q/E 换枪、R 引爆。</p><p>触屏：左摇杆移动，右摇杆瞄准并射击。双人时每位玩家有各自控制区。合作阵亡玩家在下一波复活；全员阵亡结束。对战先达到 10 击杀获胜。对战分数不提交生存榜。</p><p>连杀倍率随时间下降，达到过的升级永久保留到本局结束。油桶可阻挡并连锁爆炸；路障可被拆毁；地雷自动触发；遥控炸药由“引爆”按钮触发；轨道炮贯穿敌人。</p><p>独立玩法重制，参考 <a href="https://armorgames.com/play/158/boxhead-2play" target="_blank" rel="noopener">Boxhead: 2Play</a>。18 张重绘地图及伤害、升级阈值为本版调校。</p><ol>${WEAPONS.map((w) => `<li>${w.name}：连杀达到 ${w.unlock} 解锁</li>`).join("")}</ol><details><summary>完整升级表</summary><ul>${UPGRADES.map(([at, , , , name]) => `<li>×${at} ${name}</li>`).join("")}</ul></details></details></div>`;
   const shell = host.querySelector(".boxhead-shell"),
     arena = host.querySelector(".bh-arena"),
     canvas = host.querySelector("canvas"),
@@ -155,6 +156,11 @@ export function mount(host, hooks, saved) {
     ctx.fill();
     const size = p.r * 1.5;
     block(-size / 2, -size / 2, size, size, color, devil ? 16 : 10);
+    ctx.fillStyle = devil ? "#e7aa68" : "#e2ddba";
+    ctx.fillRect(-size / 2 + 3, -size / 2 - (devil ? 12 : 6), size - 6, 5);
+    ctx.fillStyle = "#273d33";
+    ctx.fillRect(-5, -size / 2 - (devil ? 12 : 6), 3, 3);
+    ctx.fillRect(3, -size / 2 - (devil ? 12 : 6), 3, 3);
     ctx.strokeStyle = devil ? "#ffe4a0" : "#202a29";
     ctx.lineWidth = devil ? 5 : 6;
     ctx.beginPath();
@@ -172,9 +178,9 @@ export function mount(host, hooks, saved) {
     ctx.restore();
   }
   function draw() {
-    ctx.fillStyle = "#d6d2bf";
+    ctx.fillStyle = "#c6cbb8";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.strokeStyle = "#c7c2af";
+    ctx.strokeStyle = "#b6bea9";
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = 0; x < WIDTH; x += 32) {
@@ -186,8 +192,25 @@ export function mount(host, hooks, saved) {
       ctx.lineTo(WIDTH, y);
     }
     ctx.stroke();
-    for (const b of MAPS.find((m) => m.id === s.map).blocks)
-      block(b.x, b.y, b.w, b.h, "#7f8880", 22);
+    // 场地边界与墙体细节只参与绘制，不改变碰撞范围。
+    ctx.strokeStyle = "#7a8d75";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(7, 7, WIDTH - 14, HEIGHT - 14);
+    ctx.save();
+    ctx.setLineDash([12, 12]);
+    ctx.strokeStyle = "#f0dfa4";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(13, 13, WIDTH - 26, HEIGHT - 26);
+    ctx.restore();
+    for (const b of MAPS.find((m) => m.id === s.map).blocks) {
+      block(b.x, b.y, b.w, b.h, "#6b8174", 22);
+      ctx.strokeStyle = "#9eafa0";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(b.x + 4, b.y - 18, b.w - 8, b.h - 8);
+      ctx.fillStyle = "#435c50";
+      for (let x = b.x + 12; x < b.x + b.w - 6; x += 32)
+        ctx.fillRect(x, b.y - 12, 3, 3);
+    }
     for (const b of s.boxes) {
       block(b.x - 9, b.y - 9, 18, 18, "#b64d3c", 9);
       ctx.fillStyle = "#f2d5a5";
@@ -360,8 +383,12 @@ export function mount(host, hooks, saved) {
     frame = requestAnimationFrame(tick);
     hooks.onChange();
   }
-  host.querySelector(".bh-new").onclick = () => {
-    if (s.time > 0 && !s.over && !confirm("开始新局会替换当前战场存档，继续？"))
+  host.querySelector(".bh-new").onclick = async () => {
+    if (
+      s.time > 0 &&
+      !s.over &&
+      !(await confirmAction("开始新局会替换当前战场存档，继续？"))
+    )
       return;
     start(true);
   };

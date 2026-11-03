@@ -34,14 +34,18 @@
   <body>
     <svg viewBox="0 0 480 290" role="img" aria-label="纸翼穿过障碍">
       <defs>
-        <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
-          <path d="M24 0H0V24" fill="none" stroke="#d5dfd1" stroke-width=".6" />
-        </pattern>
+        <linearGradient id="cover-sky" x2="0" y2="1">
+          <stop stop-color="#94c5d4" />
+          <stop offset="1" stop-color="#e6edd8" />
+        </linearGradient>
       </defs>
-      <rect width="480" height="290" fill="url(#grid)" />
+      <rect width="480" height="290" fill="url(#cover-sky)" />
+      <circle cx="400" cy="72" r="35" fill="#fff1ba" />
+      <path d="M0 208Q90 135 180 205T480 180V290H0Z" fill="#a3c4aa" />
+      <path d="M0 255Q110 183 220 249T480 225V290H0Z" fill="#7fa68f" />
       <path
         d="M326 0H376V80H326ZM326 215H376V290H326Z"
-        fill="#849982"
+        fill="#497c68"
         stroke="#536f56"
         stroke-width="1.5"
       />
@@ -55,11 +59,11 @@
         <g transform="translate(180 132) scale(2)">
           <path
             d="M-16 0Q-14 -13 -2 -13Q10 -13 12 -3L20 1L11 5Q3 15 -9 10Z"
-            fill="#b65a37"
-            stroke="#6b382a"
+            fill="#e6a652"
+            stroke="#825e38"
             stroke-width="1.5"
           />
-          <path d="M-12 -2L3 1L-9 8Z" fill="#f5d5a7" />
+          <path d="M-12 -2L3 1L-9 8Z" fill="#fff0cc" />
           <circle cx="6" cy="-7" r="2" fill="#29332e" />
         </g>
       </g>

@@ -46,7 +46,7 @@ const card = (g) =>
 const collectionCard = (c) =>
   `<a class="collection-row" href="${url("collection", c.id)}"><span class="eyebrow">${c.type === "posts" ? "文章集" : "游戏集"} / ${String(c.items.length).padStart(2, "0")}</span><h3>${esc(c.title)} <span>↗</span></h3><p>${esc(c.description)}</p></a>`;
 function home() {
-  main.innerHTML = `<section class="intro"><div><p class="eyebrow">夏寒的个人站点</p><h1>写下思考，<br>留一点时间玩。</h1><p class="intro-note">算法工程师。研究语言模型与 Agent，<br>也记录计算机、数学，以及游戏里的问题。</p></div><div class="intro-index"><span>这里有</span><a href="#/blog"><b>01</b> 文章 <small>${data.posts.length} 篇</small></a><a href="#/games"><b>02</b> 游戏室 <small>${data.games.length} 个</small></a></div></section><section><div class="section-heading"><h2>最近的文章</h2><a href="#/blog">全部文章 ↗</a></div><div class="post-list">${data.posts.slice(0, 3).map(row).join("")}</div></section><section class="home-games"><div class="section-heading"><h2>离开文字，玩一会儿</h2><a href="#/games">进入游戏室 ↗</a></div><div class="game-grid">${data.games.map(card).join("")}</div></section>`;
+  main.innerHTML = `<section class="intro"><div><p class="eyebrow">夏寒的个人站点</p><h1>夏寒 / ZenithX</h1><p class="intro-note">算法工程师。研究语言模型与 Agent，<br>也记录计算机、数学，以及游戏里的问题。</p></div><div class="intro-index"><span>这里有</span><a href="#/blog"><b>01</b> 文章 <small>${data.posts.length} 篇</small></a><a href="#/games"><b>02</b> 游戏室 <small>${data.games.length} 个</small></a></div></section><section><div class="section-heading"><h2>最近的文章</h2><a href="#/blog">全部文章 ↗</a></div><div class="post-list">${data.posts.slice(0, 3).map(row).join("")}</div></section><section class="home-games"><div class="section-heading"><h2>游戏</h2><a href="#/games">进入游戏室 ↗</a></div><div class="game-grid">${data.games.map(card).join("")}</div></section>`;
 }
 function blog(query) {
   const selected = new URLSearchParams(query).get("tag");
@@ -54,12 +54,12 @@ function blog(query) {
   const posts = selected
     ? data.posts.filter((p) => p.tags.includes(selected))
     : data.posts;
-  main.innerHTML = `<section class="page-heading"><p class="eyebrow">文字档案 / ${data.posts.length}</p><h1>文章</h1><p>把想清楚的事记录下来，也给未解的问题留个位置。</p></section><div class="filter-tags"><a class="tag ${!selected ? "selected" : ""}" href="#/blog">全部</a>${allTags.map((t) => `<a class="tag ${t === selected ? "selected" : ""}" href="#/blog?tag=${encodeURIComponent(t)}">${esc(t)}</a>`).join("")}</div><div class="post-list">${posts.length ? posts.map(row).join("") : '<p class="empty">这个标签下还没有文章。</p>'}</div>`;
+  main.innerHTML = `<section class="page-heading"><p class="eyebrow">文字档案 / ${data.posts.length}</p><h1>文章</h1></section><div class="filter-tags"><a class="tag ${!selected ? "selected" : ""}" href="#/blog">全部</a>${allTags.map((t) => `<a class="tag ${t === selected ? "selected" : ""}" href="#/blog?tag=${encodeURIComponent(t)}">${esc(t)}</a>`).join("")}</div><div class="post-list">${posts.length ? posts.map(row).join("") : '<p class="empty">这个标签下还没有文章。</p>'}</div>`;
 }
 async function post(id) {
   const p = data.posts.find((p) => p.id === id);
   if (!p) throw new Error("没有找到这篇文章");
-  document.title = p.title + " · Sumbon";
+  document.title = p.title + " · ZenithX";
   const groups = data.collections.filter(
     (c) => c.type === "posts" && c.items.includes(id),
   );
@@ -117,7 +117,7 @@ function collection(id) {
   main.innerHTML = `<section class="page-heading"><a class="back" href="${c.type === "posts" ? "#/collections" : "#/games"}">← ${c.type === "posts" ? "文章集" : "游戏室"}</a><p class="eyebrow">${c.type === "posts" ? "文章集" : "游戏集"} / ${c.items.length}</p><h1>${esc(c.title)}</h1><p>${esc(c.description)}</p></section><div class="${c.type === "posts" ? "ordered-posts" : "game-grid"}">${items.map((x, i) => (c.type === "posts" ? `<div class="ordered-item"><span>${String(i + 1).padStart(2, "0")}</span>${row(x)}</div>` : card(x))).join("")}</div>`;
 }
 function games() {
-  main.innerHTML = `<section class="page-heading games-heading"><div><p class="eyebrow">小小游乐场 / PLAYROOM</p><h1>再玩一局。</h1><p>不用下载，打开就能玩。进度自动留在这个浏览器里。</p></div><a href="#/rankings">看看排行榜 ↗</a></section><div class="game-grid">${data.games.map(card).join("")}</div><section><div class="section-heading"><h2>游戏集</h2></div><div class="collection-list">${data.collections
+  main.innerHTML = `<section class="page-heading games-heading"><div><p class="eyebrow">GAMES</p><h1>游戏</h1><p>不用下载，打开就能玩。进度自动留在这个浏览器里。</p></div><a href="#/rankings">看看排行榜 ↗</a></section><div class="game-grid">${data.games.map(card).join("")}</div><section><div class="section-heading"><h2>游戏集</h2></div><div class="collection-list">${data.collections
     .filter((c) => c.type === "games")
     .map(collectionCard)
     .join("")}</div></section>`;
@@ -125,7 +125,7 @@ function games() {
 async function game(id) {
   const g = data.games.find((x) => x.id === id);
   if (!g) throw new Error("没有找到这个游戏");
-  main.innerHTML = `<section class="game-page-heading"><a class="back" href="#/games">← 游戏室</a><h1>${esc(g.title)}</h1><p>${esc(g.description)}</p></section><div id="player"><p class="loading">正在读取本机存档…</p></div><section class="comments-section"><h2>这一局，怎么样？</h2><div id="comments"></div></section>`;
+  main.innerHTML = `<section class="game-page-heading"><a class="back" href="#/games">← 游戏室</a><h1>${esc(g.title)}</h1><p>${esc(g.description)}</p></section><div id="player"><p class="loading">正在读取本机存档…</p></div><section class="comments-section"><h2>游戏讨论</h2><div id="comments"></div></section>`;
   const closeComments = await mountComments(
     main.querySelector("#comments"),
     "game:" + id,
@@ -142,7 +142,7 @@ async function game(id) {
   }
 }
 async function rankings(id) {
-  main.innerHTML = `<section class="page-heading"><p class="eyebrow">记下你的最好一局</p><h1>排行榜</h1><p>总分 = 各游戏最高分 × 对应系数，再相加。${data.games.map((g) => esc(g.title) + " × " + g.coefficient).join("；")}。</p></section><nav class="rank-tabs"><a class="tag ${!id ? "selected" : ""}" href="#/rankings">总榜</a>${data.games.map((g) => `<a class="tag ${id === g.id ? "selected" : ""}" href="${url("rankings", g.id)}">${esc(g.title)}</a>`).join("")}</nav><div class="auth-area"></div><div class="rank-content"><p class="loading">正在读取排行榜…</p></div>`;
+  main.innerHTML = `<section class="page-heading"><p class="eyebrow">RANKINGS</p><h1>排行榜</h1><p>总分 = 各游戏最高分 × 对应系数，再相加。${data.games.map((g) => esc(g.title) + " × " + g.coefficient).join("；")}。</p></section><nav class="rank-tabs"><a class="tag ${!id ? "selected" : ""}" href="#/rankings">总榜</a>${data.games.map((g) => `<a class="tag ${id === g.id ? "selected" : ""}" href="${url("rankings", g.id)}">${esc(g.title)}</a>`).join("")}</nav><div class="auth-area"></div><div class="rank-content"><p class="loading">正在读取排行榜…</p></div>`;
   const area = main.querySelector(".rank-content"),
     auth = main.querySelector(".auth-area");
   if (!cloud()) {
@@ -154,7 +154,7 @@ async function rankings(id) {
   const ranks = await getRanking(id);
   area.innerHTML = ranks.length
     ? `<table class="rank-table"><thead><tr><th>名次</th><th>玩家</th><th>${id ? "最高分" : "总分"}</th></tr></thead><tbody>${ranks.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.username)}</td><td>${Number(r.score).toLocaleString("zh-CN")}</td></tr>`).join("")}</tbody></table>`
-    : '<div class="empty"><h2>第一名，留给第一位玩家。</h2><p>完成一局并登录提交成绩，就会出现在这里。</p></div>';
+    : '<div class="empty"><h2>暂无成绩</h2><p>完成一局并登录提交成绩，就会出现在这里。</p></div>';
 }
 async function route() {
   if (search.open) search.close();
@@ -167,7 +167,7 @@ async function route() {
     [path, query] = hash.split("?"),
     parts = path.split("/").filter(Boolean),
     id = parts[1] ? decodeURIComponent(parts[1]) : null;
-  document.title = "Sumbon · 文章与游戏";
+  document.title = "ZenithX · 文章与游戏";
   document
     .querySelectorAll(".site-header nav a")
     .forEach((a) =>

@@ -1,3 +1,5 @@
+import { confirmAction } from "./dialog.js";
+import { renderControls } from "./game-controls.js";
 import {
   loadSave,
   writeSave,
@@ -21,7 +23,7 @@ export async function mountPlayer(host, game) {
     const module = await import(`./games/${game.module}.js`);
     let record = await loadSave(game.id);
     best = record?.best || 0;
-    host.innerHTML = `<div class="player-layout"><div class="game-stage"></div><aside class="game-sidebar"><p class="eyebrow">${game.id} / v${game.version}</p><h2>这一局</h2><dl class="game-metrics"><div><dt>得分</dt><dd id="score">0</dd></div><div><dt>本机最高</dt><dd id="best">${best}</dd></div></dl><p>${esc(game.rules)}</p><button class="secondary pause">暂停并保存</button><div class="save-tools"><button class="quiet export">导出存档</button><label class="quiet import-label">导入存档<input class="import" type="file" accept="application/json,.json"></label><button class="quiet reset">新建存档</button></div><p class="save-status" role="status">存档保存在当前浏览器</p><p class="score-status" role="status"></p><button class="quiet upload">提交本机最高分</button><a href="#/rankings/${game.id}">查看本游戏排行榜 ↗</a></aside></div>`;
+    host.innerHTML = `<div class="player-layout"><div class="game-stage" data-game="${game.id}"></div><aside class="game-sidebar"><p class="eyebrow">${game.id} / v${game.version}</p><h2>对局信息</h2><dl class="game-metrics"><div><dt>得分</dt><dd id="score">0</dd></div><div><dt>本机最高</dt><dd id="best">${best}</dd></div></dl>${renderControls(game.id)}<details class="game-rules"><summary>规则与计分</summary><p>${esc(game.rules)}</p></details><button class="secondary pause">暂停并保存</button><div class="save-tools"><button class="quiet export">导出存档</button><label class="quiet import-label">导入存档<input class="import" type="file" accept="application/json,.json"></label><button class="quiet reset">新建存档</button></div><p class="save-status" role="status">存档保存在当前浏览器</p><p class="score-status" role="status"></p><button class="quiet upload">提交本机最高分</button><a href="#/rankings/${game.id}">查看本游戏排行榜 ↗</a></aside></div>`;
     const stage = host.querySelector(".game-stage"),
       status = host.querySelector(".save-status"),
       scoreStatus = host.querySelector(".score-status");
@@ -109,7 +111,9 @@ export async function mountPlayer(host, game) {
     };
     host.querySelector(".reset").onclick = async () => {
       if (
-        !confirm("清除本机存档和本机最高分？全站成绩不受影响。建议先导出备份。")
+        !(await confirmAction(
+          "清除本机存档和本机最高分？全站成绩不受影响。建议先导出备份。",
+        ))
       )
         return;
       suspended = true;
@@ -145,7 +149,7 @@ export async function mountPlayer(host, game) {
           r.scoreVersion !== game.scoreVersion
         )
           throw new Error("存档成绩或计分版本不兼容");
-        if (!confirm("用导入文件替换当前本机存档？")) return;
+        if (!(await confirmAction("用导入文件替换当前本机存档？"))) return;
         await queue;
         await replaceSave(game, r);
         best = r.best;

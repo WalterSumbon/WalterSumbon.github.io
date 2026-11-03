@@ -1440,3 +1440,508 @@ dialog input {
   color: #71806a;
   line-height: 1.8;
 }
+
+/* 日夜主题共用语义颜色，游戏画布保留各自的美术配色。 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #171d20;
+  --ink: #e3e7e1;
+  --muted: #a0aaa5;
+  --line: #36413f;
+  --accent: #b1cfb3;
+  --soft: #252f30;
+  --warm: #dfaa7f;
+}
+.site-header {
+  gap: 28px;
+}
+.wordmark {
+  flex-shrink: 0;
+  line-height: 0;
+}
+.wordmark img {
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+}
+#search-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+.theme-toggle {
+  width: 76px;
+  height: 44px;
+  padding: 4px 0;
+  background: transparent;
+  flex-shrink: 0;
+  border-radius: 24px;
+}
+.theme-toggle svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 2px #17262c28);
+}
+.theme-sky {
+  fill: #68a1c3;
+  transition: fill 0.4s;
+}
+.theme-disc {
+  fill: #f2cd56;
+  filter: drop-shadow(0 1px 2px #25394380);
+  transition: fill 0.4s;
+}
+.theme-orb {
+  transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.25, 1);
+}
+.theme-clouds {
+  transition:
+    transform 0.4s,
+    opacity 0.4s;
+}
+.theme-stars,
+.theme-craters {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+[data-theme="dark"] .theme-sky {
+  fill: #242e47;
+}
+[data-theme="dark"] .theme-disc {
+  fill: #d7dbe4;
+}
+[data-theme="dark"] .theme-orb {
+  transform: translateX(48px);
+}
+[data-theme="dark"] .theme-stars,
+[data-theme="dark"] .theme-craters {
+  opacity: 1;
+}
+[data-theme="dark"] .theme-clouds {
+  transform: translateY(40px);
+  opacity: 0;
+}
+.intro {
+  padding-block: 46px;
+  gap: 60px;
+}
+.intro h1 {
+  font-size: clamp(28px, 3vw, 38px);
+  letter-spacing: -0.5px;
+}
+[data-theme="dark"] .game-cover {
+  background: var(--soft);
+}
+[data-theme="dark"] .prose blockquote {
+  color: var(--muted);
+  border-color: var(--accent);
+}
+[data-theme="dark"] .prose pre,
+[data-theme="dark"] .prose code {
+  background: #222c30;
+  color: #dee5de;
+}
+[data-theme="dark"] .hljs {
+  color: #dee5de;
+  background: #222c30;
+}
+[data-theme="dark"] .hljs-keyword,
+[data-theme="dark"] .hljs-selector-tag {
+  color: #e5a4b8;
+}
+[data-theme="dark"] .hljs-string,
+[data-theme="dark"] .hljs-attr {
+  color: #bdd59c;
+}
+[data-theme="dark"] .hljs-number,
+[data-theme="dark"] .hljs-literal {
+  color: #a7c9ea;
+}
+[data-theme="dark"] .hljs-title {
+  color: #d5bdf0;
+}
+[data-theme="dark"] .hljs-comment {
+  color: #99a8a1;
+}
+[data-theme="dark"] .primary {
+  background: #91b295;
+  color: #17221a;
+}
+[data-theme="dark"] .secondary:hover {
+  background: #34453d;
+}
+[data-theme="dark"] #search-input {
+  background: var(--soft);
+  color: var(--ink);
+}
+[data-theme="dark"] .error {
+  color: #efaa94 !important;
+}
+.game-stage {
+  background: var(--soft);
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  overflow: hidden;
+}
+.game-stage .playfield {
+  box-shadow: 0 8px 24px #17261c1c;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.game-overlay {
+  color: #293b35;
+}
+.game-overlay .primary {
+  background: #3c6557;
+  color: #fff8ea;
+  border-radius: 30px;
+  padding: 13px 30px;
+}
+.controls-guide {
+  margin: 24px 0;
+}
+.controls-guide h3 {
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.control-group h4 {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 18px 0 10px;
+  font-weight: 500;
+}
+.control-group dl {
+  margin: 0;
+}
+.control-group dl > div {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+}
+.control-group dt {
+  min-width: 0;
+}
+.control-group dd {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.control-group kbd {
+  display: inline-block;
+  margin: 0;
+  padding: 5px 8px;
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom-width: 2px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.controls-guide > p {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 16px;
+}
+.game-rules {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  font-size: 12px;
+}
+.game-rules summary {
+  cursor: pointer;
+}
+.game-rules p {
+  margin-top: 12px;
+  color: var(--muted);
+}
+.game-sidebar .pause {
+  border-radius: 9px;
+}
+.game-stage[data-game="G002"] {
+  background: linear-gradient(145deg, #3c5047, #283c36);
+  padding: 26px;
+}
+.gomoku-board {
+  border: 9px solid #9f754c;
+  border-radius: 8px;
+  padding: 14px;
+  background: repeating-linear-gradient(
+    4deg,
+    #dabb8b 0px,
+    #dfc294 3px,
+    #d9b989 5px,
+    #dec095 9px
+  );
+  box-shadow:
+    0 10px 20px #0e201e55,
+    inset 0 0 0 2px #edcf9f;
+}
+.intersection {
+  background:
+    linear-gradient(#846846aa, #846846aa) center/1px 100% no-repeat,
+    linear-gradient(#846846aa, #846846aa) center/100% 1px no-repeat;
+}
+.intersection.star:before {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: #705738;
+  border-radius: 50%;
+  left: calc(50% - 2.5px);
+  top: calc(50% - 2.5px);
+}
+.intersection[data-stone="1"]:after {
+  background: radial-gradient(circle at 32% 25%, #626967, #171e1c 65%);
+  box-shadow: 1px 3px 3px #372a3160;
+}
+.intersection[data-stone="2"]:after {
+  background: radial-gradient(circle at 32% 25%, #fffefa, #e2dece 70%);
+  box-shadow: 1px 3px 3px #372a3140;
+}
+.intersection.last-move:after {
+  outline: 2px solid #bd5c47;
+  outline-offset: -4px;
+}
+.intersection:focus-visible {
+  outline: 2px solid #a14832;
+  outline-offset: -2px;
+  z-index: 1;
+}
+.board-status {
+  color: #e9eadb;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 18px;
+  font-size: 13px;
+}
+.board-status:before {
+  content: "五子棋 / 15 × 15";
+  color: #b8c9b7;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.game-stage[data-game="G002"] .game-actions {
+  color: #c8d3c4;
+  gap: 12px;
+}
+.game-stage[data-game="G002"] .quiet {
+  color: #d3ddce;
+}
+.orchard .merge-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fruit-arrive 0.24s ease-out;
+}
+@keyframes fruit-arrive {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.bh-toolbar {
+  background: #263b39;
+  color: #e5ecdb;
+  padding: 12px 14px;
+}
+.bh-toolbar .quiet {
+  color: #d7e3d0;
+  border: 1px solid #4e6860;
+  border-radius: 6px;
+}
+.boxhead-shell {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #536c5f;
+}
+.bh-menu {
+  border-radius: 12px;
+  border: 1px solid #a7b59b;
+  box-shadow: 0 8px 25px #253c3040;
+}
+.bh-menu h2 {
+  font-size: 24px;
+}
+.bh-menu select {
+  border: 1px solid #a2ad98;
+  border-radius: 6px;
+  background: #f3f0df;
+  color: #26332d;
+}
+.bh-player-panel {
+  background: #f4efdc;
+  padding: 10px;
+  border: 1px solid #c3c8b0;
+  border-radius: 8px;
+}
+.bh-player-status {
+  color: #334b3c;
+  font-weight: 600;
+}
+.bh-weapon-buttons button,
+.bh-weapon-buttons select {
+  border-radius: 5px;
+  color: #334b3c;
+}
+[data-theme="dark"] .boxhead-shell {
+  background: #293936;
+  color: #d9e1d2;
+}
+[data-theme="dark"] .bh-player-panel {
+  background: #34443d;
+  border-color: #53654e;
+}
+[data-theme="dark"] .bh-player-status {
+  color: #d9e1d2;
+}
+[data-theme="dark"] .bh-menu {
+  background: #263731f5;
+  color: #e2e7d7;
+  border-color: #64705a;
+}
+[data-theme="dark"] .bh-menu-note {
+  color: #c2cdb8;
+}
+@media (max-width: 900px) {
+  .site-header {
+    gap: 18px;
+  }
+  .site-header nav {
+    gap: 18px;
+  }
+  .account-name {
+    max-width: 95px;
+  }
+}
+@media (max-width: 600px) {
+  .site-header {
+    grid-template-columns: 1fr auto auto;
+    gap: 10px 16px;
+  }
+  .wordmark {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .wordmark img {
+    width: 46px;
+    height: 46px;
+  }
+  #search-toggle {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+  #theme-toggle {
+    grid-column: 3;
+    grid-row: 1;
+    width: 68px;
+  }
+  .site-header nav {
+    grid-column: 1/-1;
+    grid-row: 2;
+  }
+  .site-header .account {
+    grid-column: 1/-1;
+    grid-row: 3;
+    justify-self: end;
+  }
+  .game-stage {
+    padding: 12px;
+    border-radius: 15px;
+  }
+  .game-stage[data-game="G002"] {
+    padding: 14px;
+  }
+  .gomoku-board {
+    border-width: 5px;
+    padding: 8px;
+  }
+  .controls-guide {
+    margin: 20px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle *,
+  .orchard .merge-pop {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* 外圈网格在交叉点处收口，不向棋盘边框延伸。 */
+.intersection {
+  --grid-h-width: 100%;
+  --grid-h-position: center;
+  --grid-v-height: 100%;
+  --grid-v-position: center;
+  background:
+    linear-gradient(#846846aa, #846846aa) center var(--grid-v-position) / 1px
+      var(--grid-v-height) no-repeat,
+    linear-gradient(#846846aa, #846846aa) var(--grid-h-position) center /
+      var(--grid-h-width) 1px no-repeat;
+}
+.intersection:nth-child(15n + 1) {
+  --grid-h-width: 50%;
+  --grid-h-position: right;
+}
+.intersection:nth-child(15n) {
+  --grid-h-width: 50%;
+  --grid-h-position: left;
+}
+.intersection:nth-child(-n + 15) {
+  --grid-v-height: 50%;
+  --grid-v-position: bottom;
+}
+.intersection:nth-last-child(-n + 15) {
+  --grid-v-height: 50%;
+  --grid-v-position: top;
+}
+.site-confirm {
+  width: min(440px, calc(100% - 40px));
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 80px #0005;
+}
+.site-confirm::backdrop {
+  background: #101b2280;
+  backdrop-filter: blur(5px);
+}
+.site-confirm h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+.site-confirm p {
+  color: var(--muted);
+  line-height: 1.8;
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 26px;
+}
+.game-actions label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
